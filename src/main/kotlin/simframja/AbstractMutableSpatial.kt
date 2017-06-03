@@ -1,6 +1,6 @@
 package simframja
 
-import simframja.tools.computeBoundingBox
+import simframja.tools.computeBoundingBoxFor
 
 open abstract class AbstractMutableSpatial : MutableSpatial {
 
@@ -32,7 +32,7 @@ open abstract class AbstractMutableSpatial : MutableSpatial {
         cachedBoundingBox = null
     }
 
-    protected open fun computeBoundingBox(): Box = computeBoundingBox(boxes)
+    protected open fun computeBoundingBox(): Box = computeBoundingBoxFor(boxes)
 
     override val boundingBox: Box
         get() {

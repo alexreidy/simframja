@@ -4,7 +4,7 @@ import simframja.Box
 import simframja.MutableBox
 import simframja.Spatial
 
-private fun computeBoundingBoxFromBoxes(boxes: Iterable<Box>): MutableBox {
+private fun computeBoundingBoxForBoxes(boxes: Iterable<Box>): MutableBox {
     var xMin = Double.MAX_VALUE
     var yMin = Double.MAX_VALUE
     var xMax = Double.MIN_VALUE
@@ -30,8 +30,8 @@ private fun computeBoundingBoxFromBoxes(boxes: Iterable<Box>): MutableBox {
     return MutableBox(xMin, yMin, xMax, yMax)
 }
 
-fun computeBoundingBox(spatials: Iterable<Spatial>): MutableBox {
+fun computeBoundingBoxFor(spatials: Iterable<Spatial>): MutableBox {
     val boxes = ArrayList<Box>()
     for (spatial in spatials) boxes.addAll(spatial.boxes)
-    return computeBoundingBox(boxes)
+    return computeBoundingBoxForBoxes(boxes)
 }

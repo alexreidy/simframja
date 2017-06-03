@@ -24,8 +24,8 @@ class MutableBox : AbstractMutableSpatial, Box {
 
     override val boxes: List<Box> = singletonList(this)
 
-    override fun computeBoundingBox(): Box = this
-
     override val boundingBox: Box = this
+
+    protected override fun computeBoundingBox(): Box = this
 
 }
