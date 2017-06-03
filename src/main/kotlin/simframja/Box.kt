@@ -2,7 +2,15 @@ package simframja
 
 import java.util.Collections.singletonList
 
-class Box : AbstractSpatial {
+interface Box : Spatial {
+
+    val width: Double
+
+    val height: Double
+
+}
+
+class MutableBox : AbstractMutableSpatial, Box {
 
     constructor(x: Double, y: Double, width: Double, height: Double) {
         setPosition(x, y)
@@ -10,12 +18,14 @@ class Box : AbstractSpatial {
         this.height = height
     }
 
-    var width: Double
+    override var width: Double
 
-    var height: Double
+    override var height: Double
 
-    private val thisBox = singletonList(this)
+    override val boxes: List<Box> = singletonList(this)
 
-    override val boxes: List<Box> = thisBox
+    override fun computeBoundingBox(): Box = this
+
+    override val boundingBox: Box = this
 
 }

@@ -2,7 +2,17 @@ package simframja
 
 interface Spatial {
 
-    val position: Vector2
+    fun getPosition(): Vector2
+
+    val boundingBox: Box
+
+    val boxes: List<Box>
+
+    fun isTouching(thing: Spatial): Boolean
+
+}
+
+interface MutableSpatial : Spatial {
 
     fun setPosition(x: Double, y: Double)
 
@@ -11,11 +21,5 @@ interface Spatial {
     fun move(xOffset: Double, yOffset: Double)
 
     fun move(offset: Vector2)
-
-    val boundingBox: Box
-
-    val boxes: List<Box>
-
-    fun isTouching(other: Spatial): Boolean
 
 }

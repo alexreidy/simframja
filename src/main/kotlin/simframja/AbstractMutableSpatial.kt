@@ -1,11 +1,12 @@
 package simframja
 
-open abstract class AbstractSpatial : Spatial {
+import simframja.tools.computeBoundingBox
+
+open abstract class AbstractMutableSpatial : MutableSpatial {
 
     private val _position: MutableVector2 = MutableVector2()
 
-    override val position: Vector2
-        get() = _position
+    override fun getPosition(): Vector2 = _position
 
     override fun setPosition(x: Double, y: Double) {
         _position.x = x
@@ -27,33 +28,18 @@ open abstract class AbstractSpatial : Spatial {
 
     private var cachedBoundingBox: Box? = null
 
+    protected fun clearBoundingBoxCache() {
+        cachedBoundingBox = null
+    }
+
+    protected open fun computeBoundingBox(): Box = computeBoundingBox(boxes)
+
     override val boundingBox: Box
         get() {
             if (cachedBoundingBox != null) {
                 return cachedBoundingBox!!
             }
-            var xMin = Double.MAX_VALUE
-            var yMin = Double.MAX_VALUE
-            var xMax = Double.MIN_VALUE
-            var yMax = Double.MIN_VALUE
-            var pos: Double
-            for (box in boxes) {
-                if (box.position.x < xMin) {
-                    xMin = box.position.x
-                }
-                if (box.position.y < yMin) {
-                    yMin = box.position.y
-                }
-                pos = box.position.x + box.width
-                if (pos > xMax) {
-                    xMax = pos
-                }
-                pos = box.position.y + box.height
-                if (pos > yMax) {
-                    yMax = pos
-                }
-            }
-            cachedBoundingBox = Box(xMin, yMin, xMax, yMax)
+            cachedBoundingBox = computeBoundingBox()
             return cachedBoundingBox!!
         }
 
