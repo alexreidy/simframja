@@ -2,7 +2,7 @@ package simframja
 
 import simframja.tools.computeBoundingBoxFor
 
-open abstract class AbstractMutableSpatial : MutableSpatial {
+abstract class AbstractMutableSpatial : MutableSpatial {
 
     private val _position: MutableVector2 = MutableVector2()
 
@@ -43,12 +43,12 @@ open abstract class AbstractMutableSpatial : MutableSpatial {
             return cachedBoundingBox!!
         }
 
-    override fun isTouching(other: Spatial): Boolean {
-        if (!this.boundingBox.isTouching(other.boundingBox)) {
+    override fun isTouching(thing: Spatial): Boolean {
+        if (!this.boundingBox.isTouching(thing.boundingBox)) {
             return false
         }
         for (box in boxes) {
-            for (otherBox in other.boxes) {
+            for (otherBox in thing.boxes) {
                 if (box.isTouching(otherBox)) {
                     return true
                 }
