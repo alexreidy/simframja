@@ -18,8 +18,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
     }
 
     override fun move(xOffset: Double, yOffset: Double) {
-        _position.x += xOffset
-        _position.y += yOffset
+        setPosition(_position.x + xOffset, _position.y + yOffset)
     }
 
     override fun move(offset: Vector2) {

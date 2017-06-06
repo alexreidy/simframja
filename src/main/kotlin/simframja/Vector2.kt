@@ -1,38 +1,54 @@
 package simframja
 
-open class Vector2(x: Double, y: Double) {
+/**
+ * Represents a vector of two Doubles. This interface is read-only but
+ * implementations may be mutable.
+ */
+interface Vector2 {
 
-    constructor() : this(0.0, 0.0)
+    val x: Double
 
-    open val x: Double = x
+    val y: Double
 
-    open val y: Double = y
+    val magnitude: Double
 
-    val magnitude: Double get() = Math.sqrt(x*x + y*y)
+    fun copy(): Vector2
 
-    operator fun plus(v: Vector2): Vector2 {
-        return Vector2(x + v.x, y + v.y)
-    }
+    fun makeMutableCopy(): MutableVector2
 
-    operator fun minus(v: Vector2): Vector2 {
-        return Vector2(x - v.x, x - v.y)
-    }
+    operator fun plus(v: Vector2): Vector2
 
-    operator fun times(scalar: Float): Vector2 {
-        return Vector2(x * scalar, y * scalar)
-    }
+    operator fun minus(v: Vector2): Vector2
 
-    operator fun unaryMinus(): Vector2 = Vector2(-x, -y)
+    operator fun times(scalar: Double): Vector2
+
+    operator fun unaryMinus(): Vector2
 
 }
 
-class MutableVector2(x: Double, y: Double) : Vector2() {
+class ImmutableVector2(x: Double, y: Double) : Vector2 by MutableVector2(x, y)
 
-    constructor() : this(0.0, 0.0)
+class MutableVector2(x: Double = 0.0, y: Double = 0.0) : Vector2 {
 
     override var x: Double = x
 
     override var y: Double = y
+
+    override val magnitude: Double get() = Math.sqrt(x*x + y*y)
+
+    override fun toString(): String = "($x, $y)"
+
+    override fun copy(): MutableVector2 = MutableVector2(x, y)
+
+    override fun makeMutableCopy(): MutableVector2 = copy()
+
+    override operator fun plus(v: Vector2): MutableVector2 = MutableVector2(x + v.x, y + v.y)
+
+    override operator fun minus(v: Vector2): MutableVector2 = MutableVector2(x - v.x, x - v.y)
+
+    override operator fun times(scalar: Double): MutableVector2 = MutableVector2(x * scalar, y * scalar)
+
+    override operator fun unaryMinus(): MutableVector2 = MutableVector2(-x, -y)
 
     operator fun plusAssign(v: Vector2) {
         x += v.x
