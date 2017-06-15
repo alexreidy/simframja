@@ -35,11 +35,20 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
             return cachedBoxes!!
         }
 
-    override fun move(xOffset: Double, yOffset: Double) {
-        super.move(xOffset, yOffset)
+    protected fun setPositionAndGetOffset(x: Double, y: Double): Vector2 {
+        val offset = ImmutableVector2(x, y) - getPosition()
+
+        super.setPosition(x, y)
+
         for (constituent in constituents) {
-            constituent.move(xOffset, yOffset)
+            constituent.move(offset)
         }
+
+        return offset
+    }
+
+    override fun setPosition(x: Double, y: Double) {
+        setPositionAndGetOffset(x, y)
     }
 
     private val contacts = ArrayList<T>(15)

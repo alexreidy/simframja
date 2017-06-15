@@ -13,11 +13,11 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         _position.y = y
     }
 
-    override fun setPosition(pos: Vector2) {
+    final override fun setPosition(pos: Vector2) {
         setPosition(pos.x, pos.y)
     }
 
-    override fun move(xOffset: Double, yOffset: Double) {
+    final override fun move(xOffset: Double, yOffset: Double) {
         setPosition(_position.x + xOffset, _position.y + yOffset)
     }
 

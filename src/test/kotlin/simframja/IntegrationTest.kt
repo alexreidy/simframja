@@ -33,17 +33,24 @@ fun main(args: Array<String>) {
     val things = ArrayList<Thing>()
     val thing1 = Thing(10.0, 10.0)
     val thing2 = Thing(50.0, 50.0)
-    thing2.localBoxColor = Color.RED
+    thing2.localBoxColor = Color.CYAN
     thing1.addEntity(thing2)
 
-    println(thing1.boxes.count())
-    things.addAll(listOf(thing1, thing2))
+    val monster = Thing(100.0, 100.0)
+    monster.localBoxColor = Color.RED
+
+    things.addAll(listOf(thing1, thing2, monster))
 
     things.forEach { it.renderer = canvas.renderer }
+
+    monster.move(80.0, 80.0)
+
+    val rn = RandomNumberTool()
 
     while (true) {
         canvas.render(things)
         thing1.move(0.5, 0.5)
+        monster.move(rn.rsign(rn.rin(1.0)), rn.rsign(rn.rin(1.0)))
         Thread.sleep(30)
     }
 
