@@ -18,7 +18,7 @@ interface Entity<T : Entity<T>> : MutableSpatial {
      * Finds ents that are in contact and calls appropriate collision functions.
      * See `onCollisionWith()` and `whileTouching()`.
      */
-    fun handleCollisionsAndGetContacts(ents: Sequence<T>): Collection<T>
+    fun handleCollisionsAndGetContacts(ents: Iterable<T>): Collection<T>
 
     /**
      * Phantoms are detected during collision handling and considered contacts, but

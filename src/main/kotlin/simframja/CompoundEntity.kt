@@ -2,15 +2,17 @@ package simframja
 
 abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
 
-    private val constituents = ArrayList<T>()
+    private val _constituents = ArrayList<T>()
+
+    protected val constituents: Iterable<T> = _constituents
 
     fun addEntity(ent: T) {
-        constituents.add(ent)
+        _constituents.add(ent)
         handleConstituentChange()
     }
 
     fun removeEntity(ent: T) {
-        constituents.remove(ent)
+        _constituents.remove(ent)
         handleConstituentChange()
     }
 
@@ -21,7 +23,7 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
 
     private var cachedBoxes: ArrayList<Box>? = null
 
-    override val boxes: List<Box>
+    override val boxes: Iterable<Box>
         get() {
             if (cachedBoxes != null) {
                 return cachedBoxes!!
@@ -33,13 +35,20 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
             return cachedBoxes!!
         }
 
+    override fun move(xOffset: Double, yOffset: Double) {
+        super.move(xOffset, yOffset)
+        for (constituent in constituents) {
+            constituent.move(xOffset, yOffset)
+        }
+    }
+
     private val contacts = ArrayList<T>(15)
 
     /**
      * Note: this calls `handleCollisionsAndGetContacts()` on constituents!
      * todo
      */
-    override fun findContacts(ents: Sequence<T>): Collection<T> {
+    override fun findContacts(ents: Iterable<T>): Collection<T> {
         contacts.clear()
         for (constituent in constituents) {
             contacts.addAll(constituent.handleCollisionsAndGetContacts(ents))

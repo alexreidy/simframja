@@ -4,6 +4,31 @@ import simframja.Box
 import simframja.MutableBox
 import simframja.Spatial
 
+fun <T> iterableOf(vararg iterables: Iterable<T>): Iterable<T> {
+    val iterablesIterator = iterables.iterator()
+    var currentIterator =
+            if (iterablesIterator.hasNext()) iterablesIterator.next().iterator()
+            else return emptyList()
+
+    return object : Iterable<T> {
+        override fun iterator(): Iterator<T> {
+            return object : AbstractIterator<T>() {
+                override fun computeNext() {
+                    if (!currentIterator.hasNext()) {
+                        if (iterablesIterator.hasNext()) {
+                            currentIterator = iterablesIterator.next().iterator()
+                        } else {
+                            done()
+                            return
+                        }
+                    }
+                    setNext(currentIterator.next())
+                }
+            }
+        }
+    }
+}
+
 private fun computeBoundingBoxForBoxes(boxes: Iterable<Box>): MutableBox {
     var xMin = Double.MAX_VALUE
     var yMin = Double.MAX_VALUE

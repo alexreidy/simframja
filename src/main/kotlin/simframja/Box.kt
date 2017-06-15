@@ -22,7 +22,7 @@ class MutableBox : AbstractMutableSpatial, Box {
 
     override var height: Double
 
-    override val boxes: List<Box> = singletonList(this)
+    override val boxes: Iterable<Box> = singletonList(this)
 
     override val boundingBox: Box = this
 

@@ -6,7 +6,7 @@ interface Spatial {
 
     val boundingBox: Box
 
-    val boxes: List<Box>
+    val boxes: Iterable<Box>
 
     fun isTouching(thing: Spatial): Boolean
 

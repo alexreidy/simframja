@@ -21,7 +21,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         setPosition(_position.x + xOffset, _position.y + yOffset)
     }
 
-    override fun move(offset: Vector2) {
+    final override fun move(offset: Vector2) {
         move(offset.x, offset.y)
     }
 

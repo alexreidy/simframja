@@ -1,35 +1,28 @@
 package simframja
 
-import javafx.animation.AnimationTimer
-import javafx.application.Application
-import javafx.scene.Group
-import javafx.scene.Scene
-import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
-import javafx.stage.Stage
 import simframja.graphics.SimframjaCanvas
-import simframja.graphics.Visual
-import simframja.graphics.VisualElement
-import kotlin.concurrent.thread
+import simframja.tools.RandomNumberTool
 
 private const val WIDTH = 500.0
 private const val HEIGHT = 400.0
 
-class Thing(x: Double, y: Double) : ShapeEntity<Thing>(), Visual, VisualElement {
+open class Thing(x: Double, y: Double) : SimframjaEntity<Thing>() {
     override fun onCollisionWith(other: Thing) {}
 
     override fun whileTouching(other: Thing) {}
 
     init {
-        addBox(MutableBox(0.0,0.0,10.0,10.0))
-        addBox(MutableBox(10.0, 10.0, 10.0, 10.0))
+        addLocalBox(MutableBox(0.0,0.0,10.0,10.0))
+        addLocalBox(MutableBox(10.0, 10.0, 10.0, 10.0))
+        val rn = RandomNumberTool()
+        for (i in 1..100) {
+            addLocalBox(MutableBox(
+                    rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0))))
+        }
         setPosition(x, y)
+        localBoxColor = Color.GREEN
     }
-
-    override val color = Color.GREEN
-
-    override val visualElements = listOf(this)
-
 }
 
 fun main(args: Array<String>) {
@@ -40,7 +33,13 @@ fun main(args: Array<String>) {
     val things = ArrayList<Thing>()
     val thing1 = Thing(10.0, 10.0)
     val thing2 = Thing(50.0, 50.0)
+    thing2.localBoxColor = Color.RED
+    thing1.addEntity(thing2)
+
+    println(thing1.boxes.count())
     things.addAll(listOf(thing1, thing2))
+
+    things.forEach { it.renderer = canvas.renderer }
 
     while (true) {
         canvas.render(things)

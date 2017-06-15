@@ -26,7 +26,7 @@ class SimframjaCanvas constructor(
         fun createAndDisplayInWindow(title: String = DEFAULT_TITLE, width: Double, height: Double): SimframjaCanvas {
             canvasForJfxApp = SimframjaCanvas(title, width, height)
             thread {
-                Application.launch(JfxApp::class.java)
+                Application.launch(JfxApp::class.java) // todo handle exception
             }
             return canvasForJfxApp!!
         }
@@ -34,17 +34,13 @@ class SimframjaCanvas constructor(
 
     var backgroundColor: Color = Color.WHITE
 
+    val renderer: Renderer = JavaFxCanvasRenderer(graphicsContext2D)
+
     fun render(visuals: Iterable<Visual>) {
         graphicsContext2D.fill = backgroundColor
         graphicsContext2D.fillRect(0.0, 0.0, width, height)
-        for (visual in visuals) {
-            for (visualElement in visual.visualElements) {
-                graphicsContext2D.fill = visualElement.color
-                for (box in visualElement.boxes) {
-                    val pos = box.getPosition()
-                    graphicsContext2D.fillRect(pos.x, pos.y, box.width, box.height)
-                }
-            }
+        visuals.forEach {
+            it.render()
         }
     }
 
