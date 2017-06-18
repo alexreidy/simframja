@@ -10,17 +10,17 @@ interface Box : Spatial {
 
 }
 
-class MutableBox : AbstractMutableSpatial, Box {
+class MutableBox(
+        x: Double,
+        y: Double,
+        override var width: Double,
+        override var height: Double
+) : AbstractMutableSpatial(), Box {
 
-    constructor(x: Double, y: Double, width: Double, height: Double) {
+    init {
+        require(width > 0 && height > 0, { "Width and height must be greater than zero" })
         setPosition(x, y)
-        this.width = width
-        this.height = height
     }
-
-    override var width: Double
-
-    override var height: Double
 
     override val boxes: Iterable<Box> = singletonList(this)
 
