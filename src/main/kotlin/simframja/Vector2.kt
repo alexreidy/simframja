@@ -14,17 +14,17 @@ interface Vector2 {
 
     val norm: MutableVector2
 
-    fun copy(): Vector2
+    fun copy(): MutableVector2
 
-    fun makeMutableCopy(): MutableVector2
+    fun makeImmutableCopy(): ImmutableVector2
 
-    operator fun plus(v: Vector2): Vector2
+    operator fun plus(v: Vector2): MutableVector2
 
-    operator fun minus(v: Vector2): Vector2
+    operator fun minus(v: Vector2): MutableVector2
 
-    operator fun times(scalar: Double): Vector2
+    operator fun times(scalar: Double): MutableVector2
 
-    operator fun unaryMinus(): Vector2
+    operator fun unaryMinus(): MutableVector2
 
 }
 
@@ -46,17 +46,17 @@ class MutableVector2(x: Double = 0.0, y: Double = 0.0) : Vector2 {
 
     override fun toString(): String = "($x, $y)"
 
-    override fun copy(): MutableVector2 = MutableVector2(x, y)
+    override fun copy() = MutableVector2(x, y)
 
-    override fun makeMutableCopy(): MutableVector2 = copy()
+    override fun makeImmutableCopy() = ImmutableVector2(x, y)
 
-    override operator fun plus(v: Vector2): MutableVector2 = MutableVector2(x + v.x, y + v.y)
+    override operator fun plus(v: Vector2) = MutableVector2(x + v.x, y + v.y)
 
-    override operator fun minus(v: Vector2): MutableVector2 = MutableVector2(x - v.x, y - v.y)
+    override operator fun minus(v: Vector2) = MutableVector2(x - v.x, y - v.y)
 
-    override operator fun times(scalar: Double): MutableVector2 = MutableVector2(x * scalar, y * scalar)
+    override operator fun times(scalar: Double) = MutableVector2(x * scalar, y * scalar)
 
-    override operator fun unaryMinus(): MutableVector2 = MutableVector2(-x, -y)
+    override operator fun unaryMinus() = MutableVector2(-x, -y)
 
     operator fun plusAssign(v: Vector2) {
         x += v.x

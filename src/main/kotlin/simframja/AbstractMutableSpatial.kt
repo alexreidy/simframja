@@ -8,9 +8,19 @@ abstract class AbstractMutableSpatial : MutableSpatial {
 
     override fun getPosition(): Vector2 = _position
 
-    override fun setPosition(x: Double, y: Double) {
+    protected open fun setPositionAndGetOffset(x: Double, y: Double): Vector2 {
+        val offset = ImmutableVector2(x, y) - getPosition()
+
         _position.x = x
         _position.y = y
+
+        cachedBoundingBox?.move(offset)
+
+        return offset
+    }
+
+    final override fun setPosition(x: Double, y: Double) {
+        setPositionAndGetOffset(x, y)
     }
 
     final override fun setPosition(pos: Vector2) {
@@ -25,13 +35,13 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         move(offset.x, offset.y)
     }
 
-    private var cachedBoundingBox: Box? = null
+    private var cachedBoundingBox: MutableBox? = null
 
     protected fun clearBoundingBoxCache() {
         cachedBoundingBox = null
     }
 
-    protected open fun computeBoundingBox(): Box = computeBoundingBoxFor(boxes)
+    protected open fun computeBoundingBox(): MutableBox = computeBoundingBoxFor(boxes)
 
     override val boundingBox: Box
         get() {

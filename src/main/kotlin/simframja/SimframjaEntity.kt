@@ -33,11 +33,12 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
 
     override val boxes: Iterable<Box> get() = super.boxes + localBoxes
 
-    override fun setPosition(x: Double, y: Double) {
-        val offset: Vector2 = super.setPositionAndGetOffset(x, y)
+    override fun setPositionAndGetOffset(x: Double, y: Double): Vector2 {
+        val offset = super.setPositionAndGetOffset(x, y)
         for (localBox in _localBoxes) {
             localBox.move(offset)
         }
+        return offset
     }
 
     override fun render() {

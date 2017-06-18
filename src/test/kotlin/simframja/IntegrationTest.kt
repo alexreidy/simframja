@@ -3,6 +3,7 @@ package simframja
 import javafx.scene.paint.Color
 import simframja.graphics.SimframjaCanvas
 import simframja.tools.RandomNumberTool
+import java.util.Collections.singletonList
 
 private const val WIDTH = 500.0
 private const val HEIGHT = 400.0
@@ -60,9 +61,12 @@ fun main(args: Array<String>) {
     while (true) {
         things.forEach { it.handleCollisionsAndGetContacts(things) }
         //println(thing1.isTouching(monster))
-        thing1.move(0.3, 0.5)
+        thing1.move(rn.rsign(rn.rin(1.0)), rn.rsign(rn.rin(1.0)))
 
         canvas.render(things)
+
+        canvas.renderer.render(listOf(thing1.boundingBox, thing2.boundingBox, monster.boundingBox), Color(1.0, .5, .5, 0.2))
+
         val v = thing1.getPosition() - monster.getPosition()
         monster.move(v.norm * 0.25)
         Thread.sleep(30)

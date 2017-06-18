@@ -26,7 +26,7 @@ class MutableBox : AbstractMutableSpatial, Box {
 
     override val boundingBox: Box = this
 
-    override fun computeBoundingBox(): Box = this
+    override fun computeBoundingBox(): MutableBox = this
 
     private fun isTouchingBox(box: Box): Boolean {
         val mypos = getPosition()
