@@ -14,4 +14,9 @@ class VectorTests {
         assertTrue(c.y == 10.0)
     }
 
+    @Test
+    fun canSubtractVectors() {
+        
+    }
+
 }

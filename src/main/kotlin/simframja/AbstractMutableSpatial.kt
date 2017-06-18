@@ -4,7 +4,7 @@ import simframja.tools.computeBoundingBoxFor
 
 abstract class AbstractMutableSpatial : MutableSpatial {
 
-    private val _position: MutableVector2 = MutableVector2()
+    private val _position = MutableVector2()
 
     override fun getPosition(): Vector2 = _position
 

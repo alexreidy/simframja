@@ -7,7 +7,7 @@ interface Entity<T : Entity<T>> : MutableSpatial {
      * A collision occurs when an entity comes into contact with this one after
      * having not been in contact during the last check.
      */
-    fun onCollisionWith(other: T)
+    fun onCollisionWith(other: T) // todo make these events.
 
     /**
      * Called by `handleCollisionsAndGetContacts()` for every entity that this is touching.

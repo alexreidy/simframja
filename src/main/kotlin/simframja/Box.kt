@@ -39,7 +39,7 @@ class MutableBox : AbstractMutableSpatial, Box {
     }
 
     override fun isTouching(thing: Spatial): Boolean {
-        if (!this.boundingBox.isTouching(thing.boundingBox)) {
+        if (!this.isTouchingBox(thing.boundingBox)) {
             return false
         }
         for (box in thing.boxes) {

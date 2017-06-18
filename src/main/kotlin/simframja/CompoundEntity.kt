@@ -6,12 +6,12 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
 
     protected val constituents: Iterable<T> = _constituents
 
-    fun addEntity(ent: T) {
+    open fun addEntity(ent: T) {
         _constituents.add(ent)
         handleConstituentChange()
     }
 
-    fun removeEntity(ent: T) {
+    open fun removeEntity(ent: T) {
         _constituents.remove(ent)
         handleConstituentChange()
     }

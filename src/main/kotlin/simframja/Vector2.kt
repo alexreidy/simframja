@@ -12,6 +12,8 @@ interface Vector2 {
 
     val magnitude: Double
 
+    val norm: MutableVector2
+
     fun copy(): Vector2
 
     fun makeMutableCopy(): MutableVector2
@@ -36,6 +38,12 @@ class MutableVector2(x: Double = 0.0, y: Double = 0.0) : Vector2 {
 
     override val magnitude: Double get() = Math.sqrt(x*x + y*y)
 
+    override val norm: MutableVector2
+        get() {
+            val m = magnitude
+            return MutableVector2(x / m, y / m)
+        }
+
     override fun toString(): String = "($x, $y)"
 
     override fun copy(): MutableVector2 = MutableVector2(x, y)
@@ -44,7 +52,7 @@ class MutableVector2(x: Double = 0.0, y: Double = 0.0) : Vector2 {
 
     override operator fun plus(v: Vector2): MutableVector2 = MutableVector2(x + v.x, y + v.y)
 
-    override operator fun minus(v: Vector2): MutableVector2 = MutableVector2(x - v.x, x - v.y)
+    override operator fun minus(v: Vector2): MutableVector2 = MutableVector2(x - v.x, y - v.y)
 
     override operator fun times(scalar: Double): MutableVector2 = MutableVector2(x * scalar, y * scalar)
 

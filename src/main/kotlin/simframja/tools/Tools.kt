@@ -4,7 +4,7 @@ import simframja.Box
 import simframja.MutableBox
 import simframja.Spatial
 
-fun <T> iterableOf(vararg iterables: Iterable<T>): Iterable<T> {
+internal fun <T> iterableOf(vararg iterables: Iterable<T>): Iterable<T> {
     val iterablesIterator = iterables.iterator()
     var currentIterator =
             if (iterablesIterator.hasNext()) iterablesIterator.next().iterator()

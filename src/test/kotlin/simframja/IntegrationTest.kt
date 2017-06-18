@@ -7,22 +7,31 @@ import simframja.tools.RandomNumberTool
 private const val WIDTH = 500.0
 private const val HEIGHT = 400.0
 
-open class Thing(x: Double, y: Double) : SimframjaEntity<Thing>() {
-    override fun onCollisionWith(other: Thing) {}
+open class Thing() : SimframjaEntity<Thing>() {
+    override fun onCollisionWith(other: Thing) {
+        println("collision!")
+    }
 
-    override fun whileTouching(other: Thing) {}
+    override fun whileTouching(other: Thing) {
+        println("yay")
+        other.localBoxColor = Color.HOTPINK
+    }
 
-    init {
+    constructor(x: Double, y: Double) : this() {
         addLocalBox(MutableBox(0.0,0.0,10.0,10.0))
         addLocalBox(MutableBox(10.0, 10.0, 10.0, 10.0))
         val rn = RandomNumberTool()
-        for (i in 1..100) {
+        for (i in 1..30) {
             addLocalBox(MutableBox(
                     rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0))))
         }
         setPosition(x, y)
         localBoxColor = Color.GREEN
     }
+}
+
+class BoundingBox : Thing() {
+
 }
 
 fun main(args: Array<String>) {
@@ -32,14 +41,15 @@ fun main(args: Array<String>) {
 
     val things = ArrayList<Thing>()
     val thing1 = Thing(10.0, 10.0)
-    val thing2 = Thing(50.0, 50.0)
+    val thing2 = Thing(20.0, 20.0)
+    thing2.renderer = canvas.renderer
     thing2.localBoxColor = Color.CYAN
     thing1.addEntity(thing2)
 
-    val monster = Thing(100.0, 100.0)
+    val monster = Thing(30.0, 30.0)
     monster.localBoxColor = Color.RED
 
-    things.addAll(listOf(thing1, thing2, monster))
+    things.addAll(listOf(thing1, monster))
 
     things.forEach { it.renderer = canvas.renderer }
 
@@ -48,9 +58,13 @@ fun main(args: Array<String>) {
     val rn = RandomNumberTool()
 
     while (true) {
+        things.forEach { it.handleCollisionsAndGetContacts(things) }
+        //println(thing1.isTouching(monster))
+        thing1.move(0.3, 0.5)
+
         canvas.render(things)
-        thing1.move(0.5, 0.5)
-        monster.move(rn.rsign(rn.rin(1.0)), rn.rsign(rn.rin(1.0)))
+        val v = thing1.getPosition() - monster.getPosition()
+        monster.move(v.norm * 0.25)
         Thread.sleep(30)
     }
 

@@ -1,6 +1,6 @@
 package simframja.tools
 
-class RandomNumberTool {
+internal class RandomNumberTool {
 
     fun rin(range: Double): Double = Math.random() * range // Todo: use concurrent RNG.
 
