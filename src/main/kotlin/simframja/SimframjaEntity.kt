@@ -31,7 +31,7 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
         _localBoxes.remove(box)
     }
 
-    override val boxes: Iterable<Box> get() = super.boxes + localBoxes
+    override val boxes: Iterable<Box> get() = localBoxes + super.boxes
 
     override fun setPositionAndGetOffset(x: Double, y: Double): Vector2 {
         val offset = super.setPositionAndGetOffset(x, y)
