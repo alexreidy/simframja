@@ -41,12 +41,23 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
         return offset
     }
 
+    private inline fun anyLocalBoxesTouch(thing: Spatial) = localBoxes.any { it.isTouching(thing) }
+
+    override fun findContacts(ents: Iterable<T>): Collection<T> {
+        super.findContacts(ents)
+        for (ent in ents) {
+            if (anyLocalBoxesTouch(ent)) {
+                contacts.add(ent)
+            }
+        }
+        return contacts
+    }
+
     override fun isTouching(thing: Spatial): Boolean {
         if (!this.boundingBox.isTouching(thing.boundingBox)) {
             return false
         }
-        return isTouching(thing, boundingBoxShortCircuit = false) ||
-                boxes.any { it.isTouching(thing) }
+        return isTouching(thing, boundingBoxShortCircuit = false) || anyLocalBoxesTouch(thing)
     }
 
     override fun render() {

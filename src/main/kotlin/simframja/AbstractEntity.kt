@@ -29,8 +29,6 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
             this !== it && this.boundingBox.isTouching(it.boundingBox)
         }
         val contacts = findContacts(potentialContacts.asIterable())
-        println(contacts.size)
-
         for (contact in contacts) {
             if (!contact.isPhantom) {
                 if (contact !in previousContacts) {
