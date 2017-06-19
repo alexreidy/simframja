@@ -57,19 +57,23 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         return contacts
     }
 
-    override fun isTouching(thing: Spatial): Boolean {
+    protected fun isTouching(thing: Spatial, boundingBoxShortCircuit: Boolean): Boolean {
+        if (boundingBoxShortCircuit && !this.boundingBox.isTouching(thing.boundingBox)) {
+            return false
+        }
         // todo:
         // is this actually faster in most cases than the
         // default "check every box" impl?
-        if (!this.boundingBox.isTouching(thing.boundingBox)) {
-            return false
-        }
         for (constituent in constituents) {
             if (constituent.isTouching(thing)) {
                 return true
             }
         }
         return false
+    }
+
+    override fun isTouching(thing: Spatial): Boolean {
+        return isTouching(thing, boundingBoxShortCircuit = true)
     }
 
 }

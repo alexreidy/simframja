@@ -69,11 +69,8 @@ fun main(args: Array<String>) {
         canvas.renderer.render(listOf(thing1.boundingBox, thing2.boundingBox, monster.boundingBox), Color(1.0, .5, .5, 0.2))
 
         val v = thing1.getPosition() - monster.getPosition()
-        monster.move(v.norm * 0.5)
+        monster.move(v.norm * 3.0)
 
-        if (thing1.boundingBox.isTouching(monster.boundingBox)) {
-            println("bbs")
-        }
         Thread.sleep(30)
     }
 

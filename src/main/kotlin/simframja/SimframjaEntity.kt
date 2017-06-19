@@ -41,6 +41,14 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
         return offset
     }
 
+    override fun isTouching(thing: Spatial): Boolean {
+        if (!this.boundingBox.isTouching(thing.boundingBox)) {
+            return false
+        }
+        return isTouching(thing, boundingBoxShortCircuit = false) ||
+                boxes.any { it.isTouching(thing) }
+    }
+
     override fun render() {
         if (!visible) {
             return
