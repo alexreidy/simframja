@@ -68,14 +68,14 @@ class MutableVector2(x: Double = 0.0, y: Double = 0.0) : Vector2 {
         y -= v.y
     }
 
-    operator fun timesAssign(v: Vector2) {
-        x *= v.x
-        y *= v.y
+    operator fun timesAssign(scalar: Double) {
+        x *= scalar
+        y *= scalar
     }
 
-    operator fun divAssign(v: Vector2) {
-        x /= v.x
-        y /= v.y
+    operator fun divAssign(scalar: Double) {
+        x /= scalar
+        y /= scalar
     }
 
 }

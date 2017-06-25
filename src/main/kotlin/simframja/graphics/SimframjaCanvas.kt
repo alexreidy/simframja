@@ -9,7 +9,11 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import kotlin.concurrent.thread
 
+// todo: this sucks
+
 private const val DEFAULT_TITLE = "Simframja App"
+
+private var titleForPrimaryStage = DEFAULT_TITLE
 
 private var canvasForJfxApp: SimframjaCanvas? = null
 
@@ -18,6 +22,10 @@ class SimframjaCanvas constructor(
         width: Double,
         height: Double
 ) : Canvas(width, height) {
+
+    init {
+        titleForPrimaryStage = title
+    }
 
     companion object Factory {
         /**
@@ -53,6 +61,7 @@ class JfxApp : Application() {
         root.children.add(canvasForJfxApp)
         primaryStage.scene = Scene(root)
         primaryStage.show()
+        primaryStage.title = titleForPrimaryStage
         primaryStage.setOnCloseRequest {
             Platform.exit()
             System.exit(0)

@@ -39,7 +39,7 @@ fun randomColor(): Color {
 }
 
 fun main(args: Array<String>) {
-    val canvas = SimframjaCanvas.createAndDisplayInWindow("Simframja", WIDTH, HEIGHT)
+    val canvas = SimframjaCanvas.createAndDisplayInWindow("A Groovy Mosaic", WIDTH, HEIGHT)
 
     canvas.backgroundColor = Color.BLANCHEDALMOND
 
@@ -79,10 +79,15 @@ fun main(args: Array<String>) {
 
         canvas.render(things)
 
-        canvas.renderer.render(listOf(thing1.boundingBox, thing2.boundingBox, monster.boundingBox), Color(1.0, .5, .5, 0.2))
+        canvas.renderer.render(
+                listOf(thing1.boundingBox, thing2.boundingBox, monster.boundingBox), Color(1.0, .5, .5, 0.2))
 
         val v = thing1.getPosition() - monster.getPosition()
         monster.move(v.norm * 3.0)
+
+        if (rn.rin(1.0) > 0.99) {
+            println("hey")
+        }
 
         Thread.sleep(30)
     }

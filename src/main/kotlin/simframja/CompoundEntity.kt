@@ -43,7 +43,7 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         return offset
     }
 
-    protected val contacts = ArrayList<T>(15)
+    protected val contacts = ArrayList<T>()
 
     /**
      * Note: this calls `handleCollisionsAndGetContacts()` on constituents!
