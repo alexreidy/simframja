@@ -21,12 +21,22 @@ open class Thing() : SimframjaEntity<Thing>() {
 
     var name = ""
 
+    fun makeRandomBox(): MutableBox {
+        val size = rn.rin(18.0)+4
+        return MutableBox(
+                rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0)), size, size)
+    }
+
+    val growingBox = makeRandomBox()
+
     constructor(x: Double, y: Double, nboxes: Int = 5) : this() {
         val rn = RandomNumberTool()
         for (i in 1..nboxes) {
-            val size = rn.rin(18.0)+4
-            addLocalBox(MutableBox(
-                    rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0)), size, size))
+            if (i == 1) {
+                addLocalBox(growingBox)
+                continue
+            }
+            addLocalBox(makeRandomBox())
         }
         setPosition(x, y)
         localBoxColor = Color.GREEN
@@ -44,20 +54,20 @@ fun main(args: Array<String>) {
     canvas.backgroundColor = Color.BLANCHEDALMOND
 
     val things = ArrayList<Thing>()
-    val thing1 = Thing(10.0, 10.0)
-    val thing2 = Thing(20.0, 20.0)
+    val thing1 = Thing(150.0, 150.0)
+    val thing2 = Thing(150.0, 150.0)
     thing2.renderer = canvas.renderer
     thing2.localBoxColor = Color.CYAN
     thing1.addEntity(thing2)
 
     val monster = Thing(400.0, 400.0)
-    thing1.setPosition(180.0, 180.0)
+    //thing1.setPosition(180.0, 180.0)
     monster.localBoxColor = Color.RED
 
     things.addAll(listOf(thing1, monster))
 
 
-    monster.move(80.0, 80.0)
+    //monster.move(80.0, 80.0)
     //thing2.isPhantom = true
     monster.name = "monster"
     thing1.name = "thing1"
@@ -65,7 +75,7 @@ fun main(args: Array<String>) {
 
     val rn = RandomNumberTool()
 
-    for (i in 1..1000) {
+    for (i in 1..400) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
         things.add(thing)
         thing.localBoxColor = randomColor()
@@ -73,6 +83,8 @@ fun main(args: Array<String>) {
 
     things.forEach { it.renderer = canvas.renderer }
 
+    var n = 0
+    var up = true
     while (true) {
         things.forEach { it.handleCollisionsAndGetContacts(things) }
         things.forEach {  it.move(rn.rsign(rn.rin(1.0)), rn.rsign(rn.rin(1.0))) }
@@ -84,6 +96,24 @@ fun main(args: Array<String>) {
 
         val v = thing1.getPosition() - monster.getPosition()
         monster.move(v.norm * 3.0)
+
+        if (n >= 300) {
+            up = false
+        }
+        if (n <= 0) {
+            up = true
+        }
+
+        //thing2.move(.5, .5)
+        if (up) {
+            thing1.growingBox.width += 1
+            n++
+        } else {
+            thing1.growingBox.width -= 1
+            n--
+        }
+
+
 
         if (rn.rin(1.0) > 0.99) {
             println("hey")

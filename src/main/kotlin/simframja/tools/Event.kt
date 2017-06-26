@@ -12,6 +12,8 @@ interface Event<T> {
 
 class StandardEvent<T> : Event<T> {
 
+    var isEnabled = true
+
     private val handlers = ArrayList<(T) -> Unit>()
 
     override fun addHandler(handler: (T) -> Unit) {
@@ -23,12 +25,18 @@ class StandardEvent<T> : Event<T> {
     }
 
     fun fireWith(thing: T) {
+        if (!isEnabled) {
+            return
+        }
         for (handler in handlers) {
             handler.invoke(thing)
         }
     }
 
     fun fireWith(thingProvider: () -> T) {
+        if (!isEnabled) {
+            return
+        }
         for (handler in handlers) {
             val thing = thingProvider.invoke()
             handler.invoke(thing)

@@ -1,5 +1,7 @@
 package simframja
 
+import simframja.tools.Event
+import simframja.tools.StandardEvent
 import simframja.tools.computeBoundingBoxFor
 
 abstract class AbstractMutableSpatial : MutableSpatial {
@@ -8,19 +10,46 @@ abstract class AbstractMutableSpatial : MutableSpatial {
 
     override fun getPosition(): Vector2 = _position
 
-    protected open fun setPositionAndGetOffset(x: Double, y: Double): Vector2 {
-        val offset = ImmutableVector2(x, y) - getPosition()
+    protected val _boundingBoxChangedEvent = StandardEvent<Box>()
 
-        _position.x = x
-        _position.y = y
+    override val boundingBoxChangedEvent: Event<Box> = _boundingBoxChangedEvent
 
+    final override fun withoutFiringBoundingBoxChangedEvent(action: () -> Unit) {
+        if (!_boundingBoxChangedEvent.isEnabled) {
+            return
+        }
+        _boundingBoxChangedEvent.isEnabled = false
+        action.invoke()
+        _boundingBoxChangedEvent.isEnabled = true
+    }
+
+    /**
+     * Called from `setPosition()` after the position vector has been updated but before
+     * `finishSetPosition()`. Designed to be overridden.
+     * @param x The new and current x coordinate
+     * @param y The new and current y coordinate
+     * @param offset The change required to move from the previous position to the current position.
+     */
+    protected open fun handleSetPosition(x: Double, y: Double, offset: Vector2) {}
+
+    /**
+     * Called last in `setPosition()`. Fires events and finalizes the operation.
+     * Override with caution.
+     * @param x The new and current x coordinate
+     * @param y The new and current y coordinate
+     * @param offset The change required to move from the previous position to the current position.
+     */
+    protected open fun finishSetPosition(x: Double, y: Double, offset: Vector2) {
         cachedBoundingBox?.move(offset)
-
-        return offset
+        _boundingBoxChangedEvent.fireWith(boundingBox)
     }
 
     final override fun setPosition(x: Double, y: Double) {
-        setPositionAndGetOffset(x, y)
+        val offset = ImmutableVector2(x, y) - _position
+        _position.x = x
+        _position.y = y
+        handleSetPosition(x, y, offset)
+        finishSetPosition(x, y, offset)
     }
 
     final override fun setPosition(pos: Vector2) {

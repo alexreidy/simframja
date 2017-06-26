@@ -6,19 +6,29 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
 
     protected val constituents: Iterable<T> = _constituents
 
+    protected fun onConstituentBoundingBoxChanged(b: Box) {
+        handleConstituentChange()
+    }
+
+    // todo override boundingbox getter and use constituent bboxes.
+
     open fun addEntity(ent: T) {
         _constituents.add(ent)
+        ent.boundingBoxChangedEvent.addHandler(this::onConstituentBoundingBoxChanged)
         handleConstituentChange()
     }
 
     open fun removeEntity(ent: T) {
         _constituents.remove(ent)
+        ent.boundingBoxChangedEvent.removeHandler(this::onConstituentBoundingBoxChanged)
         handleConstituentChange()
     }
 
     private fun handleConstituentChange() {
         clearBoundingBoxCache()
         cachedBoxes = null
+
+        _boundingBoxChangedEvent.fireWith(boundingBox)
     }
 
     private var cachedBoxes: ArrayList<Box>? = null
@@ -35,12 +45,12 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
             return cachedBoxes!!
         }
 
-    override fun setPositionAndGetOffset(x: Double, y: Double): Vector2 {
-        val offset = super.setPositionAndGetOffset(x, y)
+    override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
         for (constituent in constituents) {
-            constituent.move(offset)
+            constituent.withoutFiringBoundingBoxChangedEvent {
+                constituent.move(offset)
+            }
         }
-        return offset
     }
 
     protected val contacts = ArrayList<T>()

@@ -25,20 +25,23 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
 
     fun addLocalBox(box: MutableBox) {
         _localBoxes.add(box)
+        box.boundingBoxChangedEvent.addHandler(this::onConstituentBoundingBoxChanged)
     }
 
     fun removeLocalBox(box: MutableBox) {
         _localBoxes.remove(box)
+        box.boundingBoxChangedEvent.removeHandler(this::onConstituentBoundingBoxChanged)
     }
 
-    override val boxes: Iterable<Box> get() = localBoxes + super.boxes
+    override val boxes: Iterable<Box> get() = localBoxes + super.boxes // todo: cache?
 
-    override fun setPositionAndGetOffset(x: Double, y: Double): Vector2 {
-        val offset = super.setPositionAndGetOffset(x, y)
+    override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
+        super.handleSetPosition(x, y, offset)
         for (localBox in _localBoxes) {
-            localBox.move(offset)
+            localBox.withoutFiringBoundingBoxChangedEvent {
+                localBox.move(offset)
+            }
         }
-        return offset
     }
 
     private inline fun anyLocalBoxesTouch(thing: Spatial) = localBoxes.any { it.isTouching(thing) }
