@@ -2,13 +2,13 @@ package simframja
 
 import simframja.tools.Event
 import simframja.tools.StandardEvent
-import simframja.tools.computeBoundingBoxFor
+import simframja.tools.computeBoundingBoxOver
 
 abstract class AbstractMutableSpatial : MutableSpatial {
 
     private val _position = MutableVector2()
 
-    override fun getPosition(): Vector2 = _position
+    override val position: Vector2 = _position
 
     protected val _boundingBoxChangedEvent = StandardEvent<Box>()
 
@@ -26,8 +26,8 @@ abstract class AbstractMutableSpatial : MutableSpatial {
     /**
      * Called from `setPosition()` after the position vector has been updated but before
      * `finishSetPosition()`. Designed to be overridden.
-     * @param x The new and current x coordinate
-     * @param y The new and current y coordinate
+     * @param x The new and current x coordinate.
+     * @param y The new and current y coordinate.
      * @param offset The change required to move from the previous position to the current position.
      */
     protected open fun handleSetPosition(x: Double, y: Double, offset: Vector2) {}
@@ -35,8 +35,8 @@ abstract class AbstractMutableSpatial : MutableSpatial {
     /**
      * Called last in `setPosition()`. Fires events and finalizes the operation.
      * Override with caution.
-     * @param x The new and current x coordinate
-     * @param y The new and current y coordinate
+     * @param x The new and current x coordinate.
+     * @param y The new and current y coordinate.
      * @param offset The change required to move from the previous position to the current position.
      */
     protected open fun finishSetPosition(x: Double, y: Double, offset: Vector2) {
@@ -70,7 +70,9 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         cachedBoundingBox = null
     }
 
-    protected open fun computeBoundingBox(): MutableBox = computeBoundingBoxFor(boxes)
+    protected open fun computeBoundingBox(): MutableBox {
+        return computeBoundingBoxOver(boxes) ?: MutableBox(position.x, position.y, 0.0, 0.0)
+    }
 
     override val boundingBox: Box
         get() {

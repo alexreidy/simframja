@@ -36,18 +36,17 @@ private fun computeBoundingBoxForBoxes(boxes: Iterable<Box>): MutableBox {
     var yMax = Double.MIN_VALUE
     var pos: Double
     for (box in boxes) {
-        val boxpos = box.getPosition()
-        if (boxpos.x < xMin) {
-            xMin = boxpos.x
+        if (box.position.x < xMin) {
+            xMin = box.position.x
         }
-        if (boxpos.y < yMin) {
-            yMin = boxpos.y
+        if (box.position.y < yMin) {
+            yMin = box.position.y
         }
-        pos = boxpos.x + box.width
+        pos = box.position.x + box.width
         if (pos > xMax) {
             xMax = pos
         }
-        pos = boxpos.y + box.height
+        pos = box.position.y + box.height
         if (pos > yMax) {
             yMax = pos
         }
@@ -55,8 +54,13 @@ private fun computeBoundingBoxForBoxes(boxes: Iterable<Box>): MutableBox {
     return MutableBox(xMin, yMin, xMax - xMin, yMax - yMin)
 }
 
-fun computeBoundingBoxFor(spatials: Iterable<Spatial>): MutableBox {
+/**
+ * Computes the bounding box over the given spatials, returning
+ * null when `spatials` is empty.
+ */
+fun computeBoundingBoxOver(spatials: Iterable<Spatial>): MutableBox? {
     val boxes = ArrayList<Box>()
     for (spatial in spatials) boxes.addAll(spatial.boxes)
+    if (boxes.isEmpty()) return null
     return computeBoundingBoxForBoxes(boxes)
 }

@@ -3,6 +3,7 @@ package simframja
 import javafx.scene.paint.Color
 import simframja.graphics.Renderer
 import simframja.graphics.Visual
+import simframja.tools.computeBoundingBoxOver
 
 abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Visual {
 
@@ -34,6 +35,13 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
     }
 
     override val boxes: Iterable<Box> get() = localBoxes + super.boxes // todo: cache?
+
+    override fun computeBoundingBox(): MutableBox {
+        val boxlist = ArrayList<Box>(_localBoxes.size + 1)
+        boxlist.add(super.computeBoundingBox())
+        boxlist.addAll(localBoxes)
+        return computeBoundingBoxOver(boxlist) ?: MutableBox(position.x, position.y, 0.0, 0.0)
+    }
 
     override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
         super.handleSetPosition(x, y, offset)

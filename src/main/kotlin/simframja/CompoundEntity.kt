@@ -1,16 +1,23 @@
 package simframja
 
+import simframja.tools.computeBoundingBoxOver
+
 abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
 
     private val _constituents = ArrayList<T>()
 
     protected val constituents: Iterable<T> = _constituents
 
-    protected fun onConstituentBoundingBoxChanged(b: Box) {
-        handleConstituentChange()
+    override fun computeBoundingBox(): MutableBox {
+        val bb: MutableBox? = computeBoundingBoxOver(constituents.map { it.boundingBox })
+        if (bb != null) return bb
+
+        return MutableBox(position.x, position.y, 0.0, 0.0)
     }
 
-    // todo override boundingbox getter and use constituent bboxes.
+    protected fun onConstituentBoundingBoxChanged(box: Box) {
+        handleConstituentChange()
+    }
 
     open fun addEntity(ent: T) {
         _constituents.add(ent)
@@ -28,6 +35,8 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         clearBoundingBoxCache()
         cachedBoxes = null
 
+        // todo this is messy. Not sure we need to pass anything.
+        // Might not be a good idea to recompute bbox here.
         _boundingBoxChangedEvent.fireWith(boundingBox)
     }
 

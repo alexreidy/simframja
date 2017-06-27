@@ -4,7 +4,7 @@ import simframja.tools.Event
 
 interface Spatial {
 
-    fun getPosition(): Vector2
+    val position: Vector2
 
     val boundingBox: Box
 

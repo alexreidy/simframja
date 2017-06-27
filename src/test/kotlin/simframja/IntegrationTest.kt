@@ -75,7 +75,7 @@ fun main(args: Array<String>) {
 
     val rn = RandomNumberTool()
 
-    for (i in 1..400) {
+    for (i in 1..1000) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
         things.add(thing)
         thing.localBoxColor = randomColor()
@@ -94,7 +94,7 @@ fun main(args: Array<String>) {
         canvas.renderer.render(
                 listOf(thing1.boundingBox, thing2.boundingBox, monster.boundingBox), Color(1.0, .5, .5, 0.2))
 
-        val v = thing1.getPosition() - monster.getPosition()
+        val v = thing1.position - monster.position
         monster.move(v.norm * 3.0)
 
         if (n >= 300) {

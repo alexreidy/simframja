@@ -13,7 +13,7 @@ interface Box : Spatial {
 class MutableBox : AbstractMutableSpatial, Box {
 
     constructor(x: Double, y: Double, width: Double, height: Double) {
-        require(width > 0 && height > 0, { "Width and height must be greater than zero" })
+        require(width >= 0 && height >= 0, { "Width and height must be at least zero; got ($width, $height)" })
         this.width = width
         this.height = height
         setPosition(x, y)
@@ -44,12 +44,11 @@ class MutableBox : AbstractMutableSpatial, Box {
     override fun computeBoundingBox(): MutableBox = this
 
     private fun isTouchingBox(box: Box): Boolean {
-        val mypos = getPosition()
-        val otherpos = box.getPosition()
-        if (otherpos.x > mypos.x + width) return false
-        if (otherpos.y > mypos.y + height) return false
-        if (otherpos.x + box.width < mypos.x) return false
-        if (otherpos.y + box.height < mypos.y) return false
+        val otherpos = box.position
+        if (otherpos.x > position.x + width) return false
+        if (otherpos.y > position.y + height) return false
+        if (otherpos.x + box.width < position.x) return false
+        if (otherpos.y + box.height < position.y) return false
         return true
     }
 
@@ -63,6 +62,10 @@ class MutableBox : AbstractMutableSpatial, Box {
             }
         }
         return false
+    }
+
+    override fun toString(): String {
+        return "MutableBox(x = ${position.x}, y = ${position.y}, width = $width, height = $height)"
     }
 
 }

@@ -15,8 +15,7 @@ class JavaFxCanvasRenderer(var graphicsContext: GraphicsContext) : Renderer {
     override fun render(boxes: Iterable<Box>, color: Color) {
         graphicsContext.fill = color
         for (box in boxes) {
-            val pos = box.getPosition()
-            graphicsContext.fillRect(pos.x, pos.y, box.width, box.height)
+            graphicsContext.fillRect(box.position.x, box.position.y, box.width, box.height)
         }
     }
 
