@@ -14,6 +14,8 @@ interface Spatial {
 
 }
 
+open class BoundingBoxChangedMessage
+
 interface MutableSpatial : Spatial {
 
     fun setPosition(x: Double, y: Double)
@@ -24,16 +26,16 @@ interface MutableSpatial : Spatial {
 
     fun move(offset: Vector2)
 
-    // todo: the following stuff is leaky.
-    // Wouldn't want users to depend on that event since we manipulate when it's enabled.
-
     /**
-     * Fires when the `boundingBox` changes in size or position.
+     * Fires when the `boundingBox` can potentially return a box that is spatially
+     * different from the one it returned before this event. In general this means
+     * "FYI - if you were caching my bounding box, it's probably outdated now."
      */
-    val boundingBoxChangedEvent: Event<Box>
+    val boundingBoxChangedEvent: Event<BoundingBoxChangedMessage>
 
     /**
-     * Temporarily disables the `boundingBoxChangedEvent` while the given action is executed.
+     * Temporarily disables the `boundingBoxInvalidatedEvent` while the given action is executed.
+     * todo: should this really be exposed?
      */
     fun withoutFiringBoundingBoxChangedEvent(action: () -> Unit)
 

@@ -15,7 +15,7 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         return MutableBox(position.x, position.y, 0.0, 0.0)
     }
 
-    protected fun onConstituentBoundingBoxChanged(box: Box) {
+    protected fun onConstituentBoundingBoxChanged(message: BoundingBoxChangedMessage) {
         handleConstituentChange()
     }
 
@@ -34,10 +34,7 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
     private fun handleConstituentChange() {
         clearBoundingBoxCache()
         cachedBoxes = null
-
-        // todo this is messy. Not sure we need to pass anything.
-        // Might not be a good idea to recompute bbox here.
-        _boundingBoxChangedEvent.fireWith(boundingBox)
+        _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
     }
 
     private var cachedBoxes: ArrayList<Box>? = null
@@ -76,6 +73,10 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         return contacts
     }
 
+    /**
+     * @param boundingBoxShortCircuit
+     * If true, immediately returns false if the thing.boundingBox doesn't touch this.boundingBox.
+     */
     protected fun isTouching(thing: Spatial, boundingBoxShortCircuit: Boolean): Boolean {
         if (boundingBoxShortCircuit && !this.boundingBox.isTouching(thing.boundingBox)) {
             return false

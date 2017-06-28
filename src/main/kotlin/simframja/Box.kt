@@ -25,7 +25,7 @@ class MutableBox : AbstractMutableSpatial, Box {
         }
         set(value) {
             field = value
-            _boundingBoxChangedEvent.fireWith(boundingBox)
+            _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
         }
 
     override var height: Double = 1.0
@@ -34,7 +34,7 @@ class MutableBox : AbstractMutableSpatial, Box {
         }
         set(value) {
             field = value
-            _boundingBoxChangedEvent.fireWith(boundingBox)
+            _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
         }
 
     override val boxes: Iterable<Box> = singletonList(this)

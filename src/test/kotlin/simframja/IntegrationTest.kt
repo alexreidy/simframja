@@ -75,7 +75,7 @@ fun main(args: Array<String>) {
 
     val rn = RandomNumberTool()
 
-    for (i in 1..1000) {
+    for (i in 1..10) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
         things.add(thing)
         thing.localBoxColor = randomColor()

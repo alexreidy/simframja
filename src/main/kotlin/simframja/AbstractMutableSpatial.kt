@@ -10,9 +10,11 @@ abstract class AbstractMutableSpatial : MutableSpatial {
 
     override val position: Vector2 = _position
 
-    protected val _boundingBoxChangedEvent = StandardEvent<Box>()
+    protected val _boundingBoxChangedEvent = StandardEvent<BoundingBoxChangedMessage>()
 
-    override val boundingBoxChangedEvent: Event<Box> = _boundingBoxChangedEvent
+    override val boundingBoxChangedEvent: Event<BoundingBoxChangedMessage> = _boundingBoxChangedEvent
+
+    protected val BOUNDS_CHANGED_MESSAGE = BoundingBoxChangedMessage()
 
     final override fun withoutFiringBoundingBoxChangedEvent(action: () -> Unit) {
         if (!_boundingBoxChangedEvent.isEnabled) {
@@ -25,7 +27,8 @@ abstract class AbstractMutableSpatial : MutableSpatial {
 
     /**
      * Called from `setPosition()` after the position vector has been updated but before
-     * `finishSetPosition()`. Designed to be overridden.
+     * `finishSetPosition()`. Override this when "setting position" means more than
+     * just changing coordinate values.
      * @param x The new and current x coordinate.
      * @param y The new and current y coordinate.
      * @param offset The change required to move from the previous position to the current position.
@@ -33,15 +36,15 @@ abstract class AbstractMutableSpatial : MutableSpatial {
     protected open fun handleSetPosition(x: Double, y: Double, offset: Vector2) {}
 
     /**
-     * Called last in `setPosition()`. Fires events and finalizes the operation.
-     * Override with caution.
+     * Called last in `setPosition()`. Moves the cached bounding box, fires events, and
+     * generally finalizes the operation. Override with caution.
      * @param x The new and current x coordinate.
      * @param y The new and current y coordinate.
      * @param offset The change required to move from the previous position to the current position.
      */
     protected open fun finishSetPosition(x: Double, y: Double, offset: Vector2) {
         cachedBoundingBox?.move(offset)
-        _boundingBoxChangedEvent.fireWith(boundingBox)
+        _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
     }
 
     final override fun setPosition(x: Double, y: Double) {
