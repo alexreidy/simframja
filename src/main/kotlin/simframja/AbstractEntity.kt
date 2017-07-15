@@ -1,9 +1,20 @@
 package simframja
 
+import simframja.tools.Event
+import simframja.tools.StandardEvent
+
 abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<T> {
 
     override var isPhantom: Boolean = false
         protected set
+
+    private val _collisionEvent = StandardEvent<T>()
+
+    override val collisionEvent: Event<T> = _collisionEvent
+
+    private val _contactEvent = StandardEvent<T>()
+
+    override val contactEvent: Event<T> = _contactEvent
 
     private val contacts = ArrayList<T>()
 
@@ -36,9 +47,9 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
         for (contact in contacts) {
             if (!contact.isPhantom) {
                 if (contact !in previousContacts) {
-                    onCollisionWith(contact)
+                    _collisionEvent.fireWith(contact)
                 }
-                whileTouching(contact)
+                _contactEvent.fireWith(contact)
             }
             previousContacts.clear()
             previousContacts.addAll(contacts)

@@ -8,16 +8,8 @@ private const val WIDTH = 800.0
 private const val HEIGHT = 450.0
 
 open class Thing() : SimframjaEntity<Thing>() {
-    override fun onCollisionWith(other: Thing) {
-        //println(name + " has collided with " + other.name)
-    }
 
     override var isPhantom: Boolean = false
-
-    override fun whileTouching(other: Thing) {
-        other.localBoxColor = localBoxColor
-        move(rn.rsign(rn.rin(5.0)), rn.rsign(rn.rin(5.0)))
-    }
 
     var name = ""
 
@@ -40,6 +32,12 @@ open class Thing() : SimframjaEntity<Thing>() {
         }
         setPosition(x, y)
         localBoxColor = Color.GREEN
+
+        contactEvent.addHandler { contact ->
+            contact.localBoxColor = localBoxColor
+            move(simframja.rn.rsign(simframja.rn.rin(5.0)), simframja.rn.rsign(simframja.rn.rin(5.0)))
+        }
+
     }
 }
 
@@ -114,10 +112,10 @@ fun main(args: Array<String>) {
         }
 
 
-
+/*
         if (rn.rin(1.0) > 0.99) {
             println("hey")
-        }
+        }*/
 
         Thread.sleep(30)
     }

@@ -1,5 +1,7 @@
 package simframja
 
+import simframja.tools.Event
+
 interface Entity<T : Entity<T>> : MutableSpatial {
 
     /**
@@ -7,12 +9,12 @@ interface Entity<T : Entity<T>> : MutableSpatial {
      * A collision occurs when an entity comes into contact with this one after
      * having not been in contact during the last check.
      */
-    fun onCollisionWith(other: T) // todo make these events.
+    val collisionEvent: Event<T>
 
     /**
      * Called by `handleCollisionsAndGetContacts()` for every entity that this is touching.
      */
-    fun whileTouching(other: T)
+    val contactEvent: Event<T>
 
     /**
      * Finds ents that are in contact and calls appropriate collision functions.
