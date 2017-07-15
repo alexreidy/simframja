@@ -13,7 +13,9 @@ interface Box : Spatial {
 class MutableBox : AbstractMutableSpatial, Box {
 
     constructor(x: Double, y: Double, width: Double, height: Double) {
-        require(width >= 0 && height >= 0, { "Width and height must be at least zero; got ($width, $height)" })
+        require(width >= 0 && height >= 0, {
+            "Width and height cannot be negative; got ($width, $height)"
+        })
         this.width = width
         this.height = height
         setPosition(x, y)
@@ -25,7 +27,7 @@ class MutableBox : AbstractMutableSpatial, Box {
         }
         set(value) {
             field = value
-            _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
+            fireBoundingBoxChangedEvent()
         }
 
     override var height: Double = 1.0
@@ -34,7 +36,7 @@ class MutableBox : AbstractMutableSpatial, Box {
         }
         set(value) {
             field = value
-            _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
+            fireBoundingBoxChangedEvent()
         }
 
     override val boxes: Iterable<Box> = singletonList(this)

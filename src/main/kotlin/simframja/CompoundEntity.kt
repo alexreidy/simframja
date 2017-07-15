@@ -34,7 +34,7 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
     private fun handleConstituentChange() {
         clearBoundingBoxCache()
         cachedBoxes = null
-        _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
+        fireBoundingBoxChangedEvent()
     }
 
     private var cachedBoxes: ArrayList<Box>? = null

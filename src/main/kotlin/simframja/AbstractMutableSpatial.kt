@@ -10,14 +10,19 @@ abstract class AbstractMutableSpatial : MutableSpatial {
 
     override val position: Vector2 = _position
 
-    protected val _boundingBoxChangedEvent = StandardEvent<BoundingBoxChangedMessage>()
+    private val _boundingBoxChangedEvent = StandardEvent<BoundingBoxChangedMessage>()
 
     override val boundingBoxChangedEvent: Event<BoundingBoxChangedMessage> = _boundingBoxChangedEvent
 
-    protected val BOUNDS_CHANGED_MESSAGE = BoundingBoxChangedMessage()
+    private val BOUNDS_CHANGED_MESSAGE = BoundingBoxChangedMessage()
+
+    protected fun fireBoundingBoxChangedEvent() {
+        _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
+    }
 
     final override fun withoutFiringBoundingBoxChangedEvent(action: () -> Unit) {
         if (!_boundingBoxChangedEvent.isEnabled) {
+            action.invoke()
             return
         }
         _boundingBoxChangedEvent.isEnabled = false
@@ -44,7 +49,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
      */
     protected open fun finishSetPosition(x: Double, y: Double, offset: Vector2) {
         cachedBoundingBox?.move(offset)
-        _boundingBoxChangedEvent.fireWith(BOUNDS_CHANGED_MESSAGE)
+        fireBoundingBoxChangedEvent()
     }
 
     final override fun setPosition(x: Double, y: Double) {
@@ -60,7 +65,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
     }
 
     final override fun move(xOffset: Double, yOffset: Double) {
-        setPosition(_position.x + xOffset, _position.y + yOffset)
+        setPosition(position.x + xOffset, position.y + yOffset)
     }
 
     final override fun move(offset: Vector2) {
@@ -74,7 +79,8 @@ abstract class AbstractMutableSpatial : MutableSpatial {
     }
 
     protected open fun computeBoundingBox(): MutableBox {
-        return computeBoundingBoxOver(boxes) ?: MutableBox(position.x, position.y, 0.0, 0.0)
+        return computeBoundingBoxOver(boxes) ?:
+                MutableBox(position.x, position.y, width = 0.0, height = 0.0)
     }
 
     override val boundingBox: Box

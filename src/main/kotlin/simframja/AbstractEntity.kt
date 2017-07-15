@@ -24,6 +24,10 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
 
     private val previousContacts = HashSet<T>()
 
+    //todo
+    // should we break this up? findContacts(), collideWith...?
+    // or maybe have recursive findContacts() as readonly alt to this:??
+
     override fun handleCollisionsAndGetContacts(ents: Iterable<T>): Collection<T> {
         val potentialContacts = ents.asSequence().filter {
             this !== it && this.boundingBox.isTouching(it.boundingBox)

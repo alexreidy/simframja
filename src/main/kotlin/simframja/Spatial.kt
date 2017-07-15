@@ -34,8 +34,8 @@ interface MutableSpatial : Spatial {
     val boundingBoxChangedEvent: Event<BoundingBoxChangedMessage>
 
     /**
-     * Temporarily disables the `boundingBoxInvalidatedEvent` while the given action is executed.
-     * todo: should this really be exposed?
+     * Temporarily disables the `boundingBoxChangedEvent` while the given action is executed.
+     * todo: should this really be exposed here?
      */
     fun withoutFiringBoundingBoxChangedEvent(action: () -> Unit)
 

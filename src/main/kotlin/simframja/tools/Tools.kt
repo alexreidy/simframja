@@ -51,7 +51,11 @@ private fun computeBoundingBoxForBoxes(boxes: Iterable<Box>): MutableBox {
             yMax = pos
         }
     }
-    return MutableBox(xMin, yMin, xMax - xMin, yMax - yMin)
+    return MutableBox(
+            x = xMin,
+            y = yMin,
+            width = xMax - xMin,
+            height = yMax - yMin)
 }
 
 /**

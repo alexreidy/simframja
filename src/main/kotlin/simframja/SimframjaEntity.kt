@@ -40,7 +40,8 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
         val boxlist = ArrayList<Box>(_localBoxes.size + 1)
         boxlist.add(super.computeBoundingBox())
         boxlist.addAll(localBoxes)
-        return computeBoundingBoxOver(boxlist) ?: MutableBox(position.x, position.y, 0.0, 0.0)
+        return computeBoundingBoxOver(boxlist) ?:
+                MutableBox(position.x, position.y, width = 0.0, height = 0.0)
     }
 
     override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
