@@ -26,7 +26,7 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
     protected open fun findContacts(ents: Iterable<T>): Collection<T> {
         contacts.clear()
         for (ent in ents) {
-            if (this.isTouching(ent)) {
+            if (this.isTouching(ent) && !ent.isPhantom) {
                 contacts.add(ent)
             }
         }
@@ -45,7 +45,7 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
         }
         val contacts = findContacts(potentialContacts.asIterable())
         for (contact in contacts) {
-            if (!contact.isPhantom) {
+            if (!contact.isPhantom) { // todo remove?
                 if (contact !in previousContacts) {
                     _collisionEvent.fireWith(contact)
                 }

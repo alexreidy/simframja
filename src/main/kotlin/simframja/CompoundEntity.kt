@@ -8,15 +8,52 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
 
     protected val constituents: Iterable<T> = _constituents
 
-    override fun computeBoundingBox(): MutableBox {
-        val bb: MutableBox? = computeBoundingBoxOver(constituents.map { it.boundingBox })
-        if (bb != null) return bb
+    private var _localBoxes = ArrayList<MutableBox>()
 
-        return MutableBox(position.x, position.y, 0.0, 0.0)
+    /**
+     * The boxes attached directly to this entity (as distinguished from boxes that are considered
+     * part of this entity, but which come from constituents).
+     */
+    val localBoxes: Iterable<Box> = _localBoxes
+
+    fun addLocalBox(box: MutableBox) {
+        _localBoxes.add(box)
+        box.boundingBoxChangedEvent.addHandler(this::onConstituentBoundingBoxChanged)
     }
 
-    protected fun onConstituentBoundingBoxChanged(message: BoundingBoxChangedMessage) {
-        handleConstituentChange()
+    fun removeLocalBox(box: MutableBox) {
+        _localBoxes.remove(box)
+        box.boundingBoxChangedEvent.removeHandler(this::onConstituentBoundingBoxChanged)
+    }
+
+    private var cachedConstituentBoxes: ArrayList<Box>? = null
+
+    private val constituentBoxes: Iterable<Box>
+        get() {
+            if (cachedConstituentBoxes != null) {
+                return cachedConstituentBoxes!!
+            }
+            cachedConstituentBoxes = ArrayList<Box>()
+            for (ent in constituents) {
+                cachedConstituentBoxes!!.addAll(ent.boxes)
+            }
+            return cachedConstituentBoxes!!
+        }
+
+    override val boxes: Iterable<Box> get() = localBoxes + constituentBoxes // todo: cache?
+
+    private fun computeBoundingBoxOverConstituents(): MutableBox {
+        val bb: MutableBox? = computeBoundingBoxOver(constituents.map { it.boundingBox })
+        if (bb != null) return bb
+        return MutableBox(position.x, position.y, width = 0.0, height = 0.0)
+    }
+
+    override fun computeBoundingBox(): MutableBox {
+        val boxlist = ArrayList<Box>(_localBoxes.size + 1)
+        boxlist.addAll(_localBoxes)
+        boxlist.add(computeBoundingBoxOverConstituents())
+        return computeBoundingBoxOver(boxlist) ?:
+                MutableBox(position.x, position.y, width = 0.0, height = 0.0)
     }
 
     open fun addEntity(ent: T) {
@@ -31,34 +68,24 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         handleConstituentChange()
     }
 
+    protected fun onConstituentBoundingBoxChanged(message: BoundingBoxChangedMessage) {
+        handleConstituentChange()
+    }
+
     private fun handleConstituentChange() {
         clearBoundingBoxCache()
-        cachedBoxes = null
+        cachedConstituentBoxes = null
         fireBoundingBoxChangedEvent()
     }
 
-    private var cachedBoxes: ArrayList<Box>? = null
-
-    override val boxes: Iterable<Box>
-        get() {
-            if (cachedBoxes != null) {
-                return cachedBoxes!!
-            }
-            cachedBoxes = ArrayList<Box>()
-            for (ent in constituents) {
-                cachedBoxes!!.addAll(ent.boxes)
-            }
-            return cachedBoxes!!
-        }
-
     override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
-        for (constituent in constituents) {
-            constituent.withoutFiringBoundingBoxChangedEvent {
-                constituent.move(offset)
-            }
-        }
+        _localBoxes.forEach { it.withoutFiringBoundingBoxChangedEvent { it.move(offset) } }
+        _constituents.forEach { it.withoutFiringBoundingBoxChangedEvent { it.move(offset) } }
     }
 
+    /**
+     * Recycled by `findContacts()`.
+     */
     protected val contacts = ArrayList<T>()
 
     /**
@@ -73,6 +100,22 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         return contacts
     }
 
+    protected fun findPartsInContactWith(thing: Spatial): HashSet<T> {
+        val contacts = HashSet<T>()
+        for (constituent in constituents) {
+            contacts.addAll(constituent.partsInContactWith(thing))
+        }
+        if (!contacts.isEmpty()) {
+            contacts.add(this as T)
+        }
+        return contacts
+    }
+
+    override fun partsInContactWith(thing: Spatial): Set<T> {
+        if (!thing.boundingBox.isTouching(this.boundingBox)) return emptySet()
+        return findPartsInContactWith(thing)
+    }
+
     /**
      * @param boundingBoxShortCircuit
      * If true, immediately returns false if the thing.boundingBox doesn't touch this.boundingBox.
@@ -84,11 +127,7 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         // todo:
         // is this actually faster in most cases than the
         // default "check every box" impl?
-        for (constituent in constituents) {
-            if (constituent.isTouching(thing)) {
-                return true
-            }
-        }
+        constituents.forEach { if (it.isTouching(thing)) return true }
         return false
     }
 

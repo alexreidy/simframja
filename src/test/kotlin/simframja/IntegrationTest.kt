@@ -35,7 +35,7 @@ open class Thing() : SimframjaEntity<Thing>() {
 
         contactEvent.addHandler { contact ->
             contact.localBoxColor = localBoxColor
-            move(simframja.rn.rsign(simframja.rn.rin(5.0)), simframja.rn.rsign(simframja.rn.rin(5.0)))
+            contact.move(simframja.rn.rsign(simframja.rn.rin(5.0)), simframja.rn.rsign(simframja.rn.rin(5.0)))
         }
 
     }
@@ -73,8 +73,12 @@ fun main(args: Array<String>) {
 
     val rn = RandomNumberTool()
 
-    for (i in 1..1000) {
+    for (i in 1..50) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
+        val t = Thing(thing.position.x, thing.position.y, 3)
+        t.localBoxColor = Color.CYAN
+        t.renderer = canvas.renderer
+        thing.addEntity(t)
         things.add(thing)
         thing.localBoxColor = randomColor()
     }

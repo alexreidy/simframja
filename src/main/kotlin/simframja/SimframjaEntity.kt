@@ -14,44 +14,7 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
      */
     var visible = true
 
-    var _localBoxes = ArrayList<MutableBox>()
-
-    /**
-     * The boxes attached directly to this entity (as distinguished from boxes that are considered
-     * part of this entity, but which come from constituents).
-     */
-    val localBoxes: Iterable<Box> = _localBoxes
-
     var localBoxColor: Color = Color.BLACK
-
-    fun addLocalBox(box: MutableBox) {
-        _localBoxes.add(box)
-        box.boundingBoxChangedEvent.addHandler(this::onConstituentBoundingBoxChanged)
-    }
-
-    fun removeLocalBox(box: MutableBox) {
-        _localBoxes.remove(box)
-        box.boundingBoxChangedEvent.removeHandler(this::onConstituentBoundingBoxChanged)
-    }
-
-    override val boxes: Iterable<Box> get() = localBoxes + super.boxes // todo: cache?
-
-    override fun computeBoundingBox(): MutableBox {
-        val boxlist = ArrayList<Box>(_localBoxes.size + 1)
-        boxlist.add(super.computeBoundingBox())
-        boxlist.addAll(localBoxes)
-        return computeBoundingBoxOver(boxlist) ?:
-                MutableBox(position.x, position.y, width = 0.0, height = 0.0)
-    }
-
-    override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
-        super.handleSetPosition(x, y, offset)
-        for (localBox in _localBoxes) {
-            localBox.withoutFiringBoundingBoxChangedEvent {
-                localBox.move(offset)
-            }
-        }
-    }
 
     private inline fun anyLocalBoxesTouch(thing: Spatial) = localBoxes.any { it.isTouching(thing) }
 
@@ -65,11 +28,20 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
         return contacts
     }
 
+    override fun partsInContactWith(thing: Spatial): Set<T> {
+        if (!thing.boundingBox.isTouching(this.boundingBox)) return emptySet()
+        val contacts = findPartsInContactWith(thing)
+        if (contacts.isEmpty() && anyLocalBoxesTouch(thing)) {
+            contacts.add(this as T)
+        }
+        return contacts
+    }
+
     override fun isTouching(thing: Spatial): Boolean {
         if (!this.boundingBox.isTouching(thing.boundingBox)) {
             return false
         }
-        return isTouching(thing, boundingBoxShortCircuit = false) || anyLocalBoxesTouch(thing)
+        return anyLocalBoxesTouch(thing) || isTouching(thing, boundingBoxShortCircuit = false)
     }
 
     override fun render() {

@@ -52,6 +52,9 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         fireBoundingBoxChangedEvent()
     }
 
+    // todo: Have a setting intened for use by only parent ents that temporarily allows motion...
+    // this is kind of messy.
+
     final override fun setPosition(x: Double, y: Double) {
         val offset = ImmutableVector2(x, y) - _position
         _position.x = x
