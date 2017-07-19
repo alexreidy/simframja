@@ -10,6 +10,12 @@ abstract class AbstractMutableSpatial : MutableSpatial {
 
     override val position: Vector2 = _position
 
+    /**
+     * When this is true, position changes will not work unless called from within
+     * a `withFreezeDisabled` block.
+     */
+    protected open var isFrozen = false
+
     private val _boundingBoxChangedEvent = StandardEvent<BoundingBoxChangedMessage>()
 
     override val boundingBoxChangedEvent: Event<BoundingBoxChangedMessage> = _boundingBoxChangedEvent
@@ -28,6 +34,16 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         _boundingBoxChangedEvent.isEnabled = false
         action.invoke()
         _boundingBoxChangedEvent.isEnabled = true
+    }
+
+    final override fun ignoringFrozenStatus(action: () -> Unit) {
+        if (!isFrozen) {
+            action.invoke()
+            return
+        }
+        isFrozen = false
+        action.invoke()
+        isFrozen = true
     }
 
     /**
@@ -52,10 +68,8 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         fireBoundingBoxChangedEvent()
     }
 
-    // todo: Have a setting intened for use by only parent ents that temporarily allows motion...
-    // this is kind of messy.
-
     final override fun setPosition(x: Double, y: Double) {
+        if (isFrozen) return
         val offset = ImmutableVector2(x, y) - _position
         _position.x = x
         _position.y = y
@@ -81,6 +95,9 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         cachedBoundingBox = null
     }
 
+    /**
+     * This is used by the `boundingBox` property, which caches the result.
+     */
     protected open fun computeBoundingBox(): MutableBox {
         return computeBoundingBoxOver(boxes) ?:
                 MutableBox(position.x, position.y, width = 0.0, height = 0.0)

@@ -23,9 +23,9 @@ interface Entity<T : Entity<T>> : MutableSpatial {
 
     /**
      * Returns any constituents of this entity (including itself) that
-     * are touching the given `thing`.
+     * are touching any of the given `spatials`.
      */
-    fun partsInContactWith(thing: Spatial): Set<T>
+    fun partsInContactWith(spatials: Iterable<Spatial>): Set<T>
 
     /**
      * Finds ents that are in contact and fires appropriate collision events.

@@ -13,6 +13,10 @@ open class Thing() : SimframjaEntity<Thing>() {
 
     var name = ""
 
+    public override var isFrozen = false
+
+    var isCool = true
+
     fun makeRandomBox(): MutableBox {
         val size = rn.rin(18.0)+4
         return MutableBox(
@@ -57,6 +61,9 @@ fun main(args: Array<String>) {
     thing2.renderer = canvas.renderer
     thing2.localBoxColor = Color.CYAN
     thing1.addEntity(thing2)
+    thing2.isFrozen = true
+
+    val initialPositionDiff = thing1.position - thing2.position
 
     val monster = Thing(400.0, 400.0)
     //thing1.setPosition(180.0, 180.0)
@@ -116,10 +123,10 @@ fun main(args: Array<String>) {
         }
 
 
-/*
-        if (rn.rin(1.0) > 0.99) {
-            println("hey")
-        }*/
+        if (rn.rin(1.0) > 0.97) {
+            val pdiff = thing1.position - thing2.position
+            println("initial pos diff = $initialPositionDiff; now it is $pdiff")
+        }
 
         Thread.sleep(30)
     }

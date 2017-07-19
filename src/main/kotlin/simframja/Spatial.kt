@@ -35,8 +35,12 @@ interface MutableSpatial : Spatial {
 
     /**
      * Temporarily disables the `boundingBoxChangedEvent` while the given action is executed.
-     * todo: should this really be exposed here?
      */
     fun withoutFiringBoundingBoxChangedEvent(action: () -> Unit)
+
+    /**
+     * Temporarily enables mobility while the action is executed.
+     */
+    fun ignoringFrozenStatus(action: () -> Unit)
 
 }

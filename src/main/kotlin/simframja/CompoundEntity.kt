@@ -88,32 +88,38 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
      */
     protected val contacts = ArrayList<T>()
 
-    /**
-     * Note: this calls `handleCollisionsAndGetContacts()` on constituents!
-     * todo
-     */
-    override fun findContacts(ents: Iterable<T>): Collection<T> {
+    override fun handleCollisionsAndGetContacts(ents: Iterable<T>): Collection<T> {
         contacts.clear()
-        for (constituent in constituents) {
-            contacts.addAll(constituent.handleCollisionsAndGetContacts(ents))
+        val potentialContacts = findPotentialContactsAmong(ents)
+        for (potentialContact in potentialContacts) {
+            contacts.addAll(potentialContact.partsInContactWith(localBoxes))
         }
+        for (constituent in constituents) {
+            contacts.addAll(
+                    constituent.handleCollisionsAndGetContacts(
+                            potentialContacts.asIterable()))
+        }
+        handleCollisionsWith(contacts)
         return contacts
     }
 
-    protected fun findPartsInContactWith(thing: Spatial): HashSet<T> {
+    private inline fun anyLocalBoxesTouch(thing: Spatial) = localBoxes.any { it.isTouching(thing) }
+
+    override fun partsInContactWith(spatials: Iterable<Spatial>): Set<T> {
         val contacts = HashSet<T>()
         for (constituent in constituents) {
-            contacts.addAll(constituent.partsInContactWith(thing))
+            contacts.addAll(constituent.partsInContactWith(spatials))
         }
-        if (!contacts.isEmpty()) {
+        if (contacts.isEmpty()) {
+            for (spatial in spatials) {
+                if (anyLocalBoxesTouch(spatial)) {
+                    contacts.add(this as T)
+                }
+            }
+        } else {
             contacts.add(this as T)
         }
         return contacts
-    }
-
-    override fun partsInContactWith(thing: Spatial): Set<T> {
-        if (!thing.boundingBox.isTouching(this.boundingBox)) return emptySet()
-        return findPartsInContactWith(thing)
     }
 
     /**
@@ -132,7 +138,10 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
     }
 
     override fun isTouching(thing: Spatial): Boolean {
-        return isTouching(thing, boundingBoxShortCircuit = true)
+        if (!this.boundingBox.isTouching(thing.boundingBox)) {
+            return false
+        }
+        return anyLocalBoxesTouch(thing) || isTouching(thing, boundingBoxShortCircuit = false)
     }
 
 }
