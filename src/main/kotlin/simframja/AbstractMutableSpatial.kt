@@ -12,7 +12,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
 
     /**
      * When this is true, position changes will not work unless called from within
-     * a `withFreezeDisabled` block.
+     * an `overridingFrozenStatus` block.
      */
     protected open var isFrozen = false
 
@@ -36,7 +36,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         _boundingBoxChangedEvent.isEnabled = true
     }
 
-    final override fun ignoringFrozenStatus(action: () -> Unit) {
+    final override fun overridingFrozenStatus(action: () -> Unit) {
         if (!isFrozen) {
             action.invoke()
             return

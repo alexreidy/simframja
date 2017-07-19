@@ -41,6 +41,6 @@ interface MutableSpatial : Spatial {
     /**
      * Temporarily enables mobility while the action is executed.
      */
-    fun ignoringFrozenStatus(action: () -> Unit)
+    fun overridingFrozenStatus(action: () -> Unit)
 
 }

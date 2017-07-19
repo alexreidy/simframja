@@ -13,7 +13,7 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
      */
     var visible = true
 
-    var localBoxColor: Color = Color.BLACK
+    var localBoxColor: Color = Color.GREEN
 
     override fun render() {
         if (!visible) return

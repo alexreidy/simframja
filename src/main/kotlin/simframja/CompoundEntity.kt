@@ -79,12 +79,24 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
     }
 
     override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
-        _localBoxes.forEach { it.withoutFiringBoundingBoxChangedEvent { it.move(offset) } }
-        _constituents.forEach { it.withoutFiringBoundingBoxChangedEvent { it.move(offset) } }
+        for (localBox in _localBoxes) {
+            localBox.withoutFiringBoundingBoxChangedEvent {
+                localBox.overridingFrozenStatus {
+                    localBox.move(offset)
+                }
+            }
+        }
+        for (constituent in _constituents) {
+            constituent.withoutFiringBoundingBoxChangedEvent {
+                constituent.overridingFrozenStatus {
+                    constituent.move(offset)
+                }
+            }
+        }
     }
 
     /**
-     * Recycled by `findContacts()`.
+     * Recycled by `handleCollisionsAndGetContacts()`.
      */
     protected val contacts = ArrayList<T>()
 
@@ -122,6 +134,13 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         return contacts
     }
 
+    override fun isTouching(thing: Spatial): Boolean {
+        if (!this.boundingBox.isTouching(thing.boundingBox)) {
+            return false
+        }
+        return anyLocalBoxesTouch(thing) || isTouching(thing, boundingBoxShortCircuit = false)
+    }
+
     /**
      * @param boundingBoxShortCircuit
      * If true, immediately returns false if the thing.boundingBox doesn't touch this.boundingBox.
@@ -135,13 +154,6 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
         // default "check every box" impl?
         constituents.forEach { if (it.isTouching(thing)) return true }
         return false
-    }
-
-    override fun isTouching(thing: Spatial): Boolean {
-        if (!this.boundingBox.isTouching(thing.boundingBox)) {
-            return false
-        }
-        return anyLocalBoxesTouch(thing) || isTouching(thing, boundingBoxShortCircuit = false)
     }
 
 }

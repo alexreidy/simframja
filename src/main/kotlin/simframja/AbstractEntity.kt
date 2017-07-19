@@ -43,12 +43,11 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
 
     protected fun handleCollisionsWith(contacts: Iterable<T>) {
         for (contact in contacts) {
-            if (!contact.isPhantom) { // todo remove?
-                if (contact !in previousContacts) {
-                    _collisionEvent.fireWith(contact)
-                }
-                _contactEvent.fireWith(contact)
+            if (contact !in previousContacts) {
+                _collisionEvent.fireWith(contact)
             }
+            _contactEvent.fireWith(contact)
+
             previousContacts.clear()
             previousContacts.addAll(contacts)
         }
