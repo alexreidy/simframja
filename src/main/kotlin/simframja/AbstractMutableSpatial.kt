@@ -16,7 +16,6 @@ abstract class AbstractMutableSpatial : MutableSpatial {
      */
     protected open var isFrozen = false
 
-
     /**
      * The objects that can make this spatial move.
      * By default, this set contains `AnyMover`,

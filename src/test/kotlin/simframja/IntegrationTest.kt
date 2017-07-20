@@ -10,6 +10,7 @@ private const val HEIGHT = 450.0
 open class Thing() : SimframjaEntity<Thing>() {
 
     override var isPhantom: Boolean = false
+        public set
 
     var name = ""
 
@@ -87,7 +88,9 @@ fun main(args: Array<String>) {
 
     for (i in 1..350) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
+        thing.isPhantom = true
         val t = Thing(thing.position.x, thing.position.y, 3)
+        //t.isPhantom = true
         t.localBoxColor = Color.CYAN
         t.renderer = canvas.renderer
         thing.addEntity(t)

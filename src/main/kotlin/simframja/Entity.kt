@@ -17,7 +17,13 @@ interface Entity<T : Entity<T>> : MutableSpatial {
     val contactEvent: Event<T>
 
     /**
-     * Phantoms do not show up as contacts even when they are physically in contact.
+     * Phantoms will show up as contacts but they will never show up in
+     * a collision or contact _event_.
+     * The idea is: Phantoms are detectable but not acted upon
+     * during the normal collision handling process.
+     * If your normal reaction (in the collision event handler, say) is to attack
+     * whatever touches you, phantoms won't be subject to this attack, but you
+     * could still see that the phantom is a contact.
      */
     val isPhantom: Boolean
 

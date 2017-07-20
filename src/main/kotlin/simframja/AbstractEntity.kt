@@ -42,6 +42,7 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
     }
 
     protected fun handleCollisionsWith(contacts: Iterable<T>) {
+        val contacts = contacts.asSequence().filter { !it.isPhantom }
         for (contact in contacts) {
             if (contact !in previousContacts) {
                 _collisionEvent.fireWith(contact)

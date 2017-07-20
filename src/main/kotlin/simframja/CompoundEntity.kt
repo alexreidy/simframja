@@ -119,12 +119,9 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
             contacts.addAll(constituent.partsInContactWith(spatials))
         }
         if (contacts.isEmpty()) {
-            for (spatial in spatials) {
-                if (anyLocalBoxesTouch(spatial)) {
-                    contacts.add(this as T)
-                }
-            }
+            spatials.forEach { if (anyLocalBoxesTouch(it)) contacts.add(this as T) }
         } else {
+            // Since at least 1 constituent is a contact, so is this by extension.
             contacts.add(this as T)
         }
         return contacts
