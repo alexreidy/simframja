@@ -16,15 +16,20 @@ interface Spatial {
 
 open class BoundingBoxChangedMessage
 
+/**
+ * The default mover (see `move` and `setPosition` methods).
+ */
+object AnyMover
+
 interface MutableSpatial : Spatial {
 
-    fun setPosition(x: Double, y: Double)
+    fun setPosition(x: Double, y: Double, mover: Any = AnyMover)
 
-    fun setPosition(pos: Vector2)
+    fun setPosition(pos: Vector2, mover: Any = AnyMover)
 
-    fun move(xOffset: Double, yOffset: Double)
+    fun move(xOffset: Double, yOffset: Double, mover: Any = AnyMover)
 
-    fun move(offset: Vector2)
+    fun move(offset: Vector2, mover: Any = AnyMover)
 
     /**
      * Fires when the `boundingBox` can potentially return a box that is spatially

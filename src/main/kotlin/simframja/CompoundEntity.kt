@@ -81,16 +81,12 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
     override fun handleSetPosition(x: Double, y: Double, offset: Vector2) {
         for (localBox in _localBoxes) {
             localBox.withoutFiringBoundingBoxChangedEvent {
-                localBox.overridingFrozenStatus {
-                    localBox.move(offset)
-                }
+                localBox.move(offset, mover = this)
             }
         }
         for (constituent in _constituents) {
             constituent.withoutFiringBoundingBoxChangedEvent {
-                constituent.overridingFrozenStatus {
-                    constituent.move(offset)
-                }
+                constituent.move(offset, mover = this)
             }
         }
     }

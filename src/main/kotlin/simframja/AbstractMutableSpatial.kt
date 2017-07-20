@@ -16,6 +16,20 @@ abstract class AbstractMutableSpatial : MutableSpatial {
      */
     protected open var isFrozen = false
 
+
+    /**
+     * The objects that can make this spatial move.
+     * By default, this set contains `AnyMover`,
+     * which is the default mover if one is not specified.
+     * So remove `AnyMover` if you want to restrict motion to
+     * a set of specific movers.
+     */
+    protected open val allowedMovers: HashSet<Any> = HashSet()
+
+    init {
+        allowedMovers.add(AnyMover)
+    }
+
     private val _boundingBoxChangedEvent = StandardEvent<BoundingBoxChangedMessage>()
 
     override val boundingBoxChangedEvent: Event<BoundingBoxChangedMessage> = _boundingBoxChangedEvent
@@ -68,8 +82,11 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         fireBoundingBoxChangedEvent()
     }
 
-    final override fun setPosition(x: Double, y: Double) {
+    final override fun setPosition(x: Double, y: Double, mover: Any) {
         if (isFrozen) return
+
+        if (mover !in allowedMovers && AnyMover !in allowedMovers) return
+
         val offset = ImmutableVector2(x, y) - _position
         _position.x = x
         _position.y = y
@@ -77,16 +94,16 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         finishSetPosition(x, y, offset)
     }
 
-    final override fun setPosition(pos: Vector2) {
-        setPosition(pos.x, pos.y)
+    final override fun setPosition(pos: Vector2, mover: Any) {
+        setPosition(pos.x, pos.y, mover)
     }
 
-    final override fun move(xOffset: Double, yOffset: Double) {
-        setPosition(position.x + xOffset, position.y + yOffset)
+    final override fun move(xOffset: Double, yOffset: Double, mover: Any) {
+        setPosition(position.x + xOffset, position.y + yOffset, mover)
     }
 
-    final override fun move(offset: Vector2) {
-        move(offset.x, offset.y)
+    final override fun move(offset: Vector2, mover: Any) {
+        move(offset.x, offset.y, mover)
     }
 
     private var cachedBoundingBox: MutableBox? = null

@@ -15,7 +15,6 @@ open class Thing() : SimframjaEntity<Thing>() {
 
     public override var isFrozen = false
 
-    var isCool = true
 
     fun makeRandomBox(): MutableBox {
         val size = rn.rin(18.0)+4
@@ -24,6 +23,12 @@ open class Thing() : SimframjaEntity<Thing>() {
     }
 
     val growingBox = makeRandomBox()
+
+    override fun addEntity(ent: Thing) {
+        ent.allowedMovers.remove(AnyMover)
+        ent.allowedMovers.add(this)
+        super.addEntity(ent)
+    }
 
     constructor(x: Double, y: Double, nboxes: Int = 5) : this() {
         val rn = RandomNumberTool()
@@ -58,10 +63,11 @@ fun main(args: Array<String>) {
     val things = ArrayList<Thing>()
     val thing1 = Thing(150.0, 150.0)
     val thing2 = Thing(150.0, 150.0)
+
     thing2.renderer = canvas.renderer
     thing2.localBoxColor = Color.CYAN
     thing1.addEntity(thing2)
-    thing2.isFrozen = true
+    //thing2.isFrozen = true
 
     val initialPositionDiff = thing1.position - thing2.position
 
@@ -71,7 +77,6 @@ fun main(args: Array<String>) {
 
     things.addAll(listOf(thing1, monster))
 
-
     //monster.move(80.0, 80.0)
     //thing2.isPhantom = true
     monster.name = "monster"
@@ -80,7 +85,7 @@ fun main(args: Array<String>) {
 
     val rn = RandomNumberTool()
 
-    for (i in 1..50) {
+    for (i in 1..350) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
         val t = Thing(thing.position.x, thing.position.y, 3)
         t.localBoxColor = Color.CYAN
