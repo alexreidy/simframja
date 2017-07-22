@@ -23,4 +23,21 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
         }
     }
 
+    /*
+    private var _products = ArrayList<T>()
+
+    protected fun addProduct(product: T) {
+        _products.add(product)
+    }
+
+    val products: Collection<T>
+        get() {
+            if (_products.isEmpty()) return emptyList()
+            val retval = _products
+            _products = ArrayList()
+            return retval
+        }*/
+
+    open fun update() {}
+
 }

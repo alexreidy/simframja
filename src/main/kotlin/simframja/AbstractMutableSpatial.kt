@@ -23,7 +23,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
      * So remove `AnyMover` if you want to restrict motion to
      * a set of specific movers.
      */
-    protected open val allowedMovers: HashSet<Any> = HashSet()
+    protected open val allowedMovers: MutableSet<Any> = HashSet()
 
     init {
         allowedMovers.add(AnyMover)

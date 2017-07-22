@@ -25,10 +25,10 @@ open class Thing() : SimframjaEntity<Thing>() {
 
     val growingBox = makeRandomBox()
 
-    override fun addEntity(ent: Thing) {
+    override fun addEntity(ent: Thing, contactTransitive: Boolean) {
         ent.allowedMovers.remove(AnyMover)
         ent.allowedMovers.add(this)
-        super.addEntity(ent)
+        super.addEntity(ent, contactTransitive)
     }
 
     constructor(x: Double, y: Double, nboxes: Int = 5) : this() {
@@ -64,10 +64,12 @@ fun main(args: Array<String>) {
     val things = ArrayList<Thing>()
     val thing1 = Thing(150.0, 150.0)
     val thing2 = Thing(150.0, 150.0)
-
+    val t3 = Thing( 190.0, 190.0)
+    t3.renderer = canvas.renderer
     thing2.renderer = canvas.renderer
     thing2.localBoxColor = Color.CYAN
     thing1.addEntity(thing2)
+    thing1.addEntity(t3)
     //thing2.isFrozen = true
 
     val initialPositionDiff = thing1.position - thing2.position
@@ -86,12 +88,12 @@ fun main(args: Array<String>) {
 
     val rn = RandomNumberTool()
 
-    for (i in 1..350) {
+    for (i in 1..42) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
-        thing.isPhantom = true
+        //thing.isPhantom = true
         val t = Thing(thing.position.x, thing.position.y, 3)
         //t.isPhantom = true
-        t.localBoxColor = Color.CYAN
+        //t.localBoxColor = Color.CYAN
         t.renderer = canvas.renderer
         thing.addEntity(t)
         things.add(thing)
