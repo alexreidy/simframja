@@ -6,7 +6,7 @@ private data class Constituent<T>(
         val entity: T,
         var contactIsTransitive: Boolean = false)
 
-abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
+abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
 
     private val _constituents = ArrayList<Constituent<T>>()
 
@@ -67,6 +67,7 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
      * will be considered a contact by extension.
      */
     open fun addEntity(ent: T, contactIsTransitive: Boolean = false) {
+        // todo support downward and bidirectional contact transitivity
         _constituents.add(Constituent(ent, contactIsTransitive))
         ent.boundingBoxChangedEvent.addHandler(this::onConstituentBoundingBoxChanged)
         handleConstituentChange()
@@ -125,15 +126,26 @@ abstract class CompoundEntity<T : Entity<T>> : AbstractEntity<T>() {
 
     override fun partsInContactWith(spatials: Iterable<Spatial>): Set<T> {
         val contacts = HashSet<T>()
+        var thisIsContactByExtension = false
         for (constituent in _constituents) {
-            contacts.addAll(constituent.entity.partsInContactWith(spatials))
+            val constituentContacts = constituent.entity.partsInContactWith(spatials)
+            contacts.addAll(constituentContacts)
+            if (constituent.contactIsTransitive && !constituentContacts.isEmpty()) {
+                thisIsContactByExtension = true
+            }
         }
-        if (contacts.isEmpty()) {
-            spatials.forEach { if (anyLocalBoxesTouch(it)) contacts.add(this as T) }
-        } else {
-            // Since at least 1 constituent is a contact, so is this by extension.
+
+        if (thisIsContactByExtension) {
             contacts.add(this as T)
+        } else if (contacts.isEmpty()) {
+            for (spatial in spatials) {
+                if (anyLocalBoxesTouch(spatial)) {
+                    contacts.add(this as T)
+                    break
+                }
+            }
         }
+
         return contacts
     }
 

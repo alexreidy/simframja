@@ -92,10 +92,14 @@ fun main(args: Array<String>) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
         //thing.isPhantom = true
         val t = Thing(thing.position.x, thing.position.y, 3)
+        val t1 = Thing(thing.position.x + 25, thing.position.y + 25, 2)
         //t.isPhantom = true
         //t.localBoxColor = Color.CYAN
         t.renderer = canvas.renderer
+        t1.renderer = canvas.renderer
+        t1.localBoxColor = Color.DARKCYAN
         thing.addEntity(t)
+        thing.addEntity(t1)
         things.add(thing)
         thing.localBoxColor = randomColor()
     }
