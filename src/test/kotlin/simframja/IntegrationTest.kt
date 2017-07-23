@@ -45,8 +45,6 @@ open class Thing() : SimframjaEntity<Thing>() {
 
         collisionEvent.addHandler { println("I, $this, collided with $it") }
 
-        // todo looks like collisions don't work. not getting reset.
-
         contactEvent.addHandler { contact ->
             contact.localBoxColor = localBoxColor
             contact.move(simframja.rn.rsign(simframja.rn.rin(5.0)), simframja.rn.rsign(simframja.rn.rin(5.0)))

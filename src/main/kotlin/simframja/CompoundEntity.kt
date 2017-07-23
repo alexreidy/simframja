@@ -6,7 +6,6 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
 
     private val _directConstituents = ArrayList<T>()
 
-    // todo: use list.asSequence().map..?
     protected val directConstituents: Iterable<T> = _directConstituents
 
     protected val allConstituents: Iterable<T> get() = _directConstituents +

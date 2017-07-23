@@ -25,18 +25,14 @@ class StandardEvent<T> : Event<T> {
     }
 
     fun fireWith(thing: T) {
-        if (!isEnabled) {
-            return
-        }
+        if (!isEnabled) return
         for (handler in handlers) {
             handler.invoke(thing)
         }
     }
 
     fun fireWith(thingProvider: () -> T) {
-        if (!isEnabled) {
-            return
-        }
+        if (!isEnabled) return
         for (handler in handlers) {
             val thing = thingProvider.invoke()
             handler.invoke(thing)
