@@ -128,9 +128,9 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
         return contacts
     }
 
-    private inline fun anyLocalBoxesTouch(thing: Spatial) = localBoxes.any { it.isTouching(thing) }
+    protected inline fun anyLocalBoxesTouch(thing: Spatial) = localBoxes.any { it.isTouching(thing) }
 
-    private inline fun anyLocalBoxesTouchAny(things: Iterable<Spatial>): Boolean {
+    protected inline fun anyLocalBoxesTouchAny(things: Iterable<Spatial>): Boolean {
         for (thing in things) {
             if (anyLocalBoxesTouch(thing)) {
                 return true

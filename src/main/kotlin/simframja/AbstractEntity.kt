@@ -48,10 +48,9 @@ abstract class AbstractEntity<T : Entity<T>> : AbstractMutableSpatial(), Entity<
                 _collisionEvent.fireWith(contact)
             }
             _contactEvent.fireWith(contact)
-
-            previousContacts.clear()
-            previousContacts.addAll(contacts)
         }
+        previousContacts.clear()
+        previousContacts.addAll(contacts)
     }
 
     override fun handleCollisionsAndGetContacts(ents: Iterable<T>): Collection<T> {
