@@ -2,7 +2,8 @@ package simframja
 
 import javafx.scene.paint.Color
 import simframja.graphics.SimframjaCanvas
-import simframja.tools.RandomNumberTool
+import simframja.tools.rin
+import simframja.tools.rsign
 
 private const val WIDTH = 800.0
 private const val HEIGHT = 450.0
@@ -18,9 +19,9 @@ open class Thing() : SimframjaEntity<Thing>() {
 
 
     fun makeRandomBox(): MutableBox {
-        val size = rn.rin(18.0)+4
+        val size =rin(18.0)+4
         return MutableBox(
-                rn.rsign(rn.rin(30.0)), rn.rsign(rn.rin(30.0)), size, size)
+                rsign(rin(30.0)), rsign(rin(30.0)), size, size)
     }
 
     val growingBox = makeRandomBox()
@@ -32,7 +33,6 @@ open class Thing() : SimframjaEntity<Thing>() {
     }
 
     constructor(x: Double, y: Double, nboxes: Int = 5) : this() {
-        val rn = RandomNumberTool()
         for (i in 1..nboxes) {
             if (i == 1) {
                 addLocalBox(growingBox)
@@ -47,15 +47,14 @@ open class Thing() : SimframjaEntity<Thing>() {
 
         contactEvent.addHandler { contact ->
             contact.localBoxColor = localBoxColor
-            contact.move(simframja.rn.rsign(simframja.rn.rin(5.0)), simframja.rn.rsign(simframja.rn.rin(5.0)))
+            contact.move(rsign(rin(5.0)), rsign(rin(5.0)))
         }
 
     }
 }
 
-private val rn = RandomNumberTool()
 fun randomColor(): Color {
-    return Color(rn.rin(1.0), rn.rin(1.0), rn.rin(1.0), 1.0)
+    return Color(rin(1.0), rin(1.0), rin(1.0), 1.0)
 }
 
 fun main(args: Array<String>) {
@@ -92,10 +91,8 @@ fun main(args: Array<String>) {
     thing1.name = "thing1"
     thing2.name = "thing2"
 
-    val rn = RandomNumberTool()
-
     for (i in 1..1) {
-        val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
+        val thing = Thing(rin(WIDTH), rin(HEIGHT), nboxes = 1)
         //thing.isPhantom = true
         val t = Thing(thing.position.x + 25, thing.position.y + 25, 1)
         val t1 = Thing(thing.position.x + 55, thing.position.y + 55, 1)
@@ -116,7 +113,7 @@ fun main(args: Array<String>) {
     var up = true
     while (true) {
         things.forEach { it.handleCollisionsAndGetContacts(things) }
-        things.forEach {  it.move(rn.rsign(rn.rin(1.0)), rn.rsign(rn.rin(1.0))) }
+        things.forEach {  it.move(rsign(rin(1.0)), rsign(rin(1.0))) }
 
         canvas.render(things)
 
@@ -145,7 +142,7 @@ fun main(args: Array<String>) {
         }
 
 
-        if (rn.rin(1.0) > 0.97) {
+        if (rin(1.0) > 0.97) {
             val pdiff = thing1.position - thing2.position
             println("initial pos diff = $initialPositionDiff; now it is $pdiff")
         }

@@ -3,6 +3,28 @@ package simframja.tools
 import simframja.Box
 import simframja.MutableBox
 import simframja.Spatial
+import java.util.concurrent.ThreadLocalRandom
+
+/**
+ * Generates a random number in [0, range).
+ */
+fun rin(range: Double): Double = ThreadLocalRandom.current().nextDouble(range)
+
+/**
+ * Returns the given number with a random sign.
+ */
+fun rsign(n: Double): Double = if (rin(1.0) > 0.5) n else -n
+
+/**
+ * Computes the bounding box over the given spatials, returning
+ * null when `spatials` is empty.
+ */
+fun computeBoundingBoxOver(spatials: Iterable<Spatial>): MutableBox? {
+    val boxes = ArrayList<Box>()
+    for (spatial in spatials) boxes.addAll(spatial.boxes)
+    if (boxes.isEmpty()) return null
+    return computeBoundingBoxForBoxes(boxes)
+}
 
 internal fun <T> iterableOf(vararg iterables: Iterable<T>): Iterable<T> {
     val iterablesIterator = iterables.iterator()
@@ -56,15 +78,4 @@ private fun computeBoundingBoxForBoxes(boxes: Iterable<Box>): MutableBox {
             y = yMin,
             width = xMax - xMin,
             height = yMax - yMin)
-}
-
-/**
- * Computes the bounding box over the given spatials, returning
- * null when `spatials` is empty.
- */
-fun computeBoundingBoxOver(spatials: Iterable<Spatial>): MutableBox? {
-    val boxes = ArrayList<Box>()
-    for (spatial in spatials) boxes.addAll(spatial.boxes)
-    if (boxes.isEmpty()) return null
-    return computeBoundingBoxForBoxes(boxes)
 }
