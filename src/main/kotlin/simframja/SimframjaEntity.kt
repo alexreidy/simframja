@@ -18,7 +18,7 @@ abstract class SimframjaEntity<T : SimframjaEntity<T>> : CompoundEntity<T>(), Vi
     override fun render() {
         if (!visible) return
         renderer?.render(localBoxes, localBoxColor)
-        for (constituent in constituents) {
+        for (constituent in directConstituents) {
             constituent.render()
         }
     }

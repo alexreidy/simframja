@@ -25,10 +25,10 @@ open class Thing() : SimframjaEntity<Thing>() {
 
     val growingBox = makeRandomBox()
 
-    override fun addEntity(ent: Thing, contactTransitive: Boolean) {
-        ent.allowedMovers.remove(AnyMover)
-        ent.allowedMovers.add(this)
-        super.addEntity(ent, contactTransitive)
+    override fun addEntity(ent: Thing, isContactTransitive: Boolean) {
+        ent.setCanBeMovedBy(AnyMover, false)
+        ent.setCanBeMovedBy(this)
+        super.addEntity(ent, isContactTransitive)
     }
 
     constructor(x: Double, y: Double, nboxes: Int = 5) : this() {
@@ -42,6 +42,10 @@ open class Thing() : SimframjaEntity<Thing>() {
         }
         setPosition(x, y)
         localBoxColor = Color.GREEN
+
+        collisionEvent.addHandler { println("I, $this, collided with $it") }
+
+        // todo looks like collisions don't work. not getting reset.
 
         contactEvent.addHandler { contact ->
             contact.localBoxColor = localBoxColor
@@ -58,6 +62,10 @@ fun randomColor(): Color {
 
 fun main(args: Array<String>) {
     val canvas = SimframjaCanvas.createAndDisplayInWindow("A Groovy Mosaic", WIDTH, HEIGHT)
+
+    val mpos = MutableVector2()
+
+    canvas.setOnMouseMoved { mouseEvent -> mpos.x = mouseEvent.x; mpos.y = mouseEvent.y }
 
     canvas.backgroundColor = Color.BLANCHEDALMOND
 
@@ -88,11 +96,11 @@ fun main(args: Array<String>) {
 
     val rn = RandomNumberTool()
 
-    for (i in 1..42) {
+    for (i in 1..1) {
         val thing = Thing(rn.rin(WIDTH), rn.rin(HEIGHT), nboxes = 1)
         //thing.isPhantom = true
-        val t = Thing(thing.position.x, thing.position.y, 3)
-        val t1 = Thing(thing.position.x + 25, thing.position.y + 25, 2)
+        val t = Thing(thing.position.x + 25, thing.position.y + 25, 1)
+        val t1 = Thing(thing.position.x + 55, thing.position.y + 55, 1)
         //t.isPhantom = true
         //t.localBoxColor = Color.CYAN
         t.renderer = canvas.renderer
@@ -119,6 +127,8 @@ fun main(args: Array<String>) {
 
         val v = thing1.position - monster.position
         monster.move(v.norm * 3.0)
+
+        monster.setPosition(mpos)
 
         if (n >= 300) {
             up = false

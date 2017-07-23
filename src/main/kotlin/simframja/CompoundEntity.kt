@@ -2,16 +2,22 @@ package simframja
 
 import simframja.tools.computeBoundingBoxOver
 
-private data class Constituent<T>(
-        val entity: T,
-        var contactIsTransitive: Boolean = false)
-
 abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
 
-    private val _constituents = ArrayList<Constituent<T>>()
+    private val _directConstituents = ArrayList<T>()
 
     // todo: use list.asSequence().map..?
-    protected val constituents: Iterable<T> get() = _constituents.map { it.entity }
+    protected val directConstituents: Iterable<T> = _directConstituents
+
+    protected val allConstituents: Iterable<T> get() = _directConstituents +
+            _directConstituents.map { it.allConstituents }
+            .flatten()
+
+    /**
+     * When this is true, this entity will consider itself a contact by extension
+     * if any of its constituents return anything from partsInContactWith().
+     */
+    protected var isContactTransitive = false
 
     private var _localBoxes = ArrayList<MutableBox>()
 
@@ -39,8 +45,8 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
                 return cachedConstituentBoxes!!
             }
             cachedConstituentBoxes = ArrayList<Box>()
-            for (constituent in _constituents) {
-                cachedConstituentBoxes!!.addAll(constituent.entity.boxes)
+            for (constituent in _directConstituents) {
+                cachedConstituentBoxes!!.addAll(constituent.boxes)
             }
             return cachedConstituentBoxes!!
         }
@@ -48,7 +54,7 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
     override val boxes: Iterable<Box> get() = localBoxes + constituentBoxes // todo: cache?
 
     private fun computeBoundingBoxOverConstituents(): MutableBox {
-        val bb: MutableBox? = computeBoundingBoxOver(_constituents.map { it.entity.boundingBox })
+        val bb: MutableBox? = computeBoundingBoxOver(_directConstituents.map { it.boundingBox })
         if (bb != null) return bb
         return MutableBox(position.x, position.y, width = 0.0, height = 0.0)
     }
@@ -62,19 +68,19 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
     }
 
     /**
-     * @param contactIsTransitive When true, if `ent` is found to be a contact of
-     * a constituent by `partsInContactWith()`, then this parent compound entity
-     * will be considered a contact by extension.
+     * @param isContactTransitive Sets the ent's contact transitivity property.
+     * When true, if the ent's constituents find contacts with partsInContactWith(),
+     * it considers itself a contact by extension even if it's not a contact per se.
      */
-    open fun addEntity(ent: T, contactIsTransitive: Boolean = false) {
-        // todo support downward and bidirectional contact transitivity
-        _constituents.add(Constituent(ent, contactIsTransitive))
+    open fun addEntity(ent: T, isContactTransitive: Boolean = false) {
+        ent.isContactTransitive = isContactTransitive
+        _directConstituents.add(ent)
         ent.boundingBoxChangedEvent.addHandler(this::onConstituentBoundingBoxChanged)
         handleConstituentChange()
     }
 
     open fun removeEntity(ent: T) {
-        _constituents.removeIf { it.entity == ent } // todo
+        _directConstituents.remove(ent)
         ent.boundingBoxChangedEvent.removeHandler(this::onConstituentBoundingBoxChanged)
         handleConstituentChange()
     }
@@ -95,9 +101,9 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
                 localBox.move(offset, mover = this)
             }
         }
-        for (constituent in _constituents) {
-            constituent.entity.withoutFiringBoundingBoxChangedEvent {
-                constituent.entity.move(offset, mover = this)
+        for (constituent in _directConstituents) {
+            constituent.withoutFiringBoundingBoxChangedEvent {
+                constituent.move(offset, mover = this)
             }
         }
     }
@@ -113,9 +119,9 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
         for (potentialContact in potentialContacts) {
             contacts.addAll(potentialContact.partsInContactWith(localBoxes))
         }
-        for (constituent in _constituents) {
+        for (constituent in _directConstituents) {
             contacts.addAll(
-                    constituent.entity.handleCollisionsAndGetContacts(
+                    constituent.handleCollisionsAndGetContacts(
                             potentialContacts.asIterable()))
         }
         handleCollisionsWith(contacts)
@@ -124,28 +130,25 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
 
     private inline fun anyLocalBoxesTouch(thing: Spatial) = localBoxes.any { it.isTouching(thing) }
 
+    private inline fun anyLocalBoxesTouchAny(things: Iterable<Spatial>): Boolean {
+        for (thing in things) {
+            if (anyLocalBoxesTouch(thing)) {
+                return true
+            }
+        }
+        return false
+    }
+
     override fun partsInContactWith(spatials: Iterable<Spatial>): Set<T> {
         val contacts = HashSet<T>()
-        var thisIsContactByExtension = false
-        for (constituent in _constituents) {
-            val constituentContacts = constituent.entity.partsInContactWith(spatials)
-            contacts.addAll(constituentContacts)
-            if (constituent.contactIsTransitive && !constituentContacts.isEmpty()) {
-                thisIsContactByExtension = true
-            }
+        for (constituent in _directConstituents) {
+            contacts.addAll(constituent.partsInContactWith(spatials))
         }
-
-        if (thisIsContactByExtension) {
+        if (this.isContactTransitive && !contacts.isEmpty()) {
             contacts.add(this as T)
-        } else if (contacts.isEmpty()) {
-            for (spatial in spatials) {
-                if (anyLocalBoxesTouch(spatial)) {
-                    contacts.add(this as T)
-                    break
-                }
-            }
+        } else if (anyLocalBoxesTouchAny(spatials)) {
+            contacts.add(this as T)
         }
-
         return contacts
     }
 
@@ -167,7 +170,7 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
         // todo:
         // is this actually faster in most cases than the
         // default "check every box" impl?
-        _constituents.forEach { if (it.entity.isTouching(thing)) return true }
+        _directConstituents.forEach { if (it.isTouching(thing)) return true }
         return false
     }
 

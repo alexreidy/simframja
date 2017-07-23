@@ -23,10 +23,18 @@ abstract class AbstractMutableSpatial : MutableSpatial {
      * So remove `AnyMover` if you want to restrict motion to
      * a set of specific movers.
      */
-    protected open val allowedMovers: MutableSet<Any> = HashSet()
+    private val allowedMovers = HashSet<Any>()
 
     init {
         allowedMovers.add(AnyMover)
+    }
+
+    fun setCanBeMovedBy(mover: Any, can: Boolean = true) {
+        if (can) {
+            allowedMovers.add(mover)
+        } else {
+            allowedMovers.remove(mover)
+        }
     }
 
     private val _boundingBoxChangedEvent = StandardEvent<BoundingBoxChangedMessage>()
