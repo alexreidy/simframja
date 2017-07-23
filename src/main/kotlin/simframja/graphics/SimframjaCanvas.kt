@@ -18,7 +18,7 @@ private var titleForPrimaryStage = DEFAULT_TITLE
 private var canvasForJfxApp: SimframjaCanvas? = null
 
 class SimframjaCanvas constructor(
-        var title: String = DEFAULT_TITLE,
+        title: String = DEFAULT_TITLE,
         width: Double,
         height: Double
 ) : Canvas(width, height) {

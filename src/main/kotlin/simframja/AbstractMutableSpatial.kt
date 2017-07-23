@@ -29,7 +29,7 @@ abstract class AbstractMutableSpatial : MutableSpatial {
         allowedMovers.add(AnyMover)
     }
 
-    fun setCanBeMovedBy(mover: Any, can: Boolean = true) {
+    override fun setCanBeMovedBy(mover: Any, can: Boolean) {
         if (can) {
             allowedMovers.add(mover)
         } else {

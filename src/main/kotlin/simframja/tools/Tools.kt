@@ -11,9 +11,14 @@ import java.util.concurrent.ThreadLocalRandom
 fun rin(range: Double): Double = ThreadLocalRandom.current().nextDouble(range)
 
 /**
+ * Generates a random number in [origin, bound).
+ */
+fun rin(origin: Double, bound: Double): Double = ThreadLocalRandom.current().nextDouble(origin, bound)
+
+/**
  * Returns the given number with a random sign.
  */
-fun rsign(n: Double): Double = if (rin(1.0) > 0.5) n else -n
+fun rsign(n: Double): Double = if (rin(1.0) >= 0.5) n else -n
 
 /**
  * Computes the bounding box over the given spatials, returning

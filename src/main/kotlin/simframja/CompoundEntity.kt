@@ -6,8 +6,14 @@ abstract class CompoundEntity<T : CompoundEntity<T>> : AbstractEntity<T>() {
 
     private val _directConstituents = ArrayList<T>()
 
+    /**
+     * The constituents attached directly to this entity with `addEntity()`.
+     */
     protected val directConstituents: Iterable<T> = _directConstituents
 
+    /**
+     * Includes directConstituents and, recursively, all of their constituents.
+     */
     protected val allConstituents: Iterable<T> get() = _directConstituents +
             _directConstituents.map { it.allConstituents }
             .flatten()
